@@ -1,0 +1,38 @@
+{
+  "data": {
+    "user": {
+      "repositories": {
+        "edges": [
+          {
+            "node": {
+              "name": "test-repo1",
+              "owner": {
+                "login": "moj-analytical-services"
+              }
+            }
+          },
+          {
+            "node": {
+              "name": "test-repo2",
+              "owner": {
+                "login": "moj-analytical-services"
+              }
+            }
+          },
+          {
+            "node": {
+              "name": "test-repo3",
+              "owner": {
+                "login": "moj-analytical-services"
+              }
+            }
+          }
+        ],
+        "pageInfo": {
+          "endCursor": null,
+          "hasNextPage": false
+        }
+      }
+    }
+  }
+}

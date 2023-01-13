@@ -1,0 +1,56 @@
+{
+  "data": {
+    "organization": {
+      "repository": {
+        "pullRequests": {
+          "nodes": [
+            {
+              "title": "Pull request 1",
+              "files": {
+                "edges": [
+                  {
+                    "node": {
+                      "path": "somefile1"
+                    }
+                  },
+                  {
+                    "node": {
+                      "path": "somefile2"
+                    }
+                  },
+                  {
+                    "node": {
+                      "path": "somefile3"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "title": "Pull request 2",
+              "files": {
+                "edges": [
+                  {
+                    "node": {
+                      "path": "somefile4"
+                    }
+                  },
+                  {
+                    "node": {
+                      "path": "somefile5"
+                    }
+                  },
+                  {
+                    "node": {
+                      "path": "somefile6"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

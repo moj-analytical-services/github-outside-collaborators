@@ -1,0 +1,62 @@
+{
+  "data": {
+    "search": {
+      "repos": [
+        {
+          "repo": {
+            "name": "test-repo1",
+            "isLocked": false,
+            "isDisabled": false,
+            "collaborators": {
+              "totalCount": 1
+            }
+          }
+        },
+        {
+          "repo": {
+            "name": "test-repo2",
+            "isLocked": true,
+            "isDisabled": false,
+            "collaborators": {
+              "totalCount": 0
+            }
+          }
+        },
+        {
+          "repo": {
+            "name": "test-repo3",
+            "isLocked": false,
+            "isDisabled": false,
+            "collaborators": {
+              "totalCount": 5
+            }
+          }
+        },
+        {
+          "repo": {
+            "name": "test-repo4",
+            "isLocked": false,
+            "isDisabled": true,
+            "collaborators": {
+              "totalCount": 2
+            }
+          }
+        },
+        {
+          "repo": {
+            "name": "test-repo5",
+            "isLocked": false,
+            "isDisabled": false,
+            "collaborators": {
+              "totalCount": null
+            }
+          }
+        }
+      ],
+      "pageInfo": {
+        "hasNextPage": false,
+        "endCursor": null
+      }
+    }
+  }
+}

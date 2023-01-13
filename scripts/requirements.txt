@@ -1,0 +1,6 @@
+aiohttp
+ghapi
+gql
+websockets
+PyGithub
+requests

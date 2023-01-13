@@ -1,0 +1,31 @@
+{
+  "data": {
+    "organization": {
+      "repository": {
+        "collaborators": {
+          "edges": [
+            {
+              "node": {
+                "login": "someuser1"
+              }
+            },
+            {
+              "node": {
+                "login": "someuser2"
+              }
+            },
+            {
+              "node": {
+                "login": "someuser3"
+              }
+            }
+          ],
+          "pageInfo": {
+            "hasNextPage": false,
+            "endCursor": null
+          }
+        }
+      }
+    }
+  }
+}

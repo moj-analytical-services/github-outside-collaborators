@@ -1,5 +1,4 @@
-name: code-formatter
-
+name: Code formatter
 on:
   pull_request:
     types: [opened, edited, reopened, synchronize]

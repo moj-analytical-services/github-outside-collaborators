@@ -1,0 +1,36 @@
+name: Outside collaborators check and remove manually added collaborators
+on:
+  workflow_dispatch:
+  # schedule:
+  #   - cron: "0 7 * * *"
+
+env:
+  RUBY_VERSION: 3.1.0
+
+jobs:
+  outside-collaborators-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
+          bundler-cache: true
+      - name: Check the outside collaborators
+        run: bin/outside-collaborators.rb
+        env:
+          ADMIN_GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
+          OPS_BOT_TOKEN: ${{ secrets.OPS_BOT_TOKEN }}
+          REALLY_POST_TO_SLACK: ${{ secrets.POST_TO_SLACK }}
+          REALLY_POST_TO_GH: ${{ secrets.POST_TO_GH }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          LOG_LEVEL: "debug"
+      - name: Report failure to Slack
+        if: always()
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          notify_when: "failure"
+          notification_title: "Failed GitHub Action Run"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
