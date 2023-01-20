@@ -234,25 +234,34 @@ class GithubCollaborators
 
           context "" do
             before do
-              @full_org_member.add_terraform_repositories([TEST_REPO_NAME])
-              test_equal(@full_org_member.terraform_repositories.length, 1)
+              @full_org_member.add_github_repository(TEST_REPO_NAME)
+              test_equal(@full_org_member.terraform_repositories.length, 0)
+              test_equal(@full_org_member.github_repositories.length, 1)
               test_equal(@full_org_member.missing_from_terraform_files, true)
             end
 
-            it "when have a mismatch in collaborator repositories and pull request does not exist" do
+            it "when a pull request already exists" do
+              expect(@outside_collaborators).to receive(:does_pr_already_exist).with(TEST_REPO_NAME_TERRAFORM_FILE, "#{ADD_FULL_ORG_MEMBER_PR_TITLE} #{TEST_USER_1}").and_return(true)
+              expect(terraform_files).not_to receive(:ensure_file_exists_in_memory)
+              @outside_collaborators.add_collaborator(@full_org_member)
+            end
+
+            it "when collaborator is on the GitHub repository and already in the Terraform file and a pull request does not exist" do
               expect(@outside_collaborators).to receive(:does_pr_already_exist).with(TEST_REPO_NAME_TERRAFORM_FILE, "#{ADD_FULL_ORG_MEMBER_PR_TITLE} #{TEST_USER_1}").and_return(false)
+              expect(terraform_files).to receive(:is_user_in_file).with(TEST_REPO_NAME, TEST_USER_1).and_return(true)
+              expect(terraform_files).not_to receive(:ensure_file_exists_in_memory)
+              @outside_collaborators.add_collaborator(@full_org_member)
+            end
+
+            it "when collaborator is on the GitHub repository but not in the Terraform file and collaborator isn't in the Terraform file and a pull request does not exist" do
+              expect(@outside_collaborators).to receive(:does_pr_already_exist).with(TEST_REPO_NAME_TERRAFORM_FILE, "#{ADD_FULL_ORG_MEMBER_PR_TITLE} #{TEST_USER_1}").and_return(false)
+              expect(terraform_files).to receive(:is_user_in_file).with(TEST_REPO_NAME, TEST_USER_1).and_return(false)
               expect(terraform_files).to receive(:ensure_file_exists_in_memory).with(TEST_REPO_NAME)
               expect(@full_org_member).to receive(:get_repository_permission).with(TEST_REPO_NAME).and_return("triage")
               expect(terraform_files).to receive(:add_full_org_collaborator_to_file).with(TEST_REPO_NAME, @full_org_member, "triage")
               expect(@full_org_member).to receive(:add_ignore_repository).with(TEST_REPO_NAME)
               allow_any_instance_of(HelperModule).to receive(:create_branch_and_pull_request).with("#{ADD_COLLABORATOR_BRANCH_NAME}#{TEST_USER_1}", [TEST_FILE], "#{ADD_FULL_ORG_MEMBER_PR_TITLE} #{TEST_USER_1}", TEST_USER_1, TYPE_ADD)
               expect(@outside_collaborators).to receive(:add_new_pull_request).with("#{ADD_FULL_ORG_MEMBER_PR_TITLE} #{TEST_USER_1}", [TEST_FILE])
-              @outside_collaborators.add_collaborator(@full_org_member)
-            end
-
-            it "when have a mismatch in collaborator repositories and pull request does not exist" do
-              expect(@outside_collaborators).to receive(:does_pr_already_exist).with(TEST_REPO_NAME_TERRAFORM_FILE, "#{ADD_FULL_ORG_MEMBER_PR_TITLE} #{TEST_USER_1}").and_return(true)
-              expect(terraform_files).not_to receive(:ensure_file_exists_in_memory)
               @outside_collaborators.add_collaborator(@full_org_member)
             end
           end
@@ -441,24 +450,48 @@ class GithubCollaborators
             expect(organization).to receive(:get_full_org_members_with_repository_permission_mismatches).and_return([])
             expect(organization).to receive(:get_odd_full_org_members).and_return([])
             expect(organization).to receive(:get_full_org_members_attached_to_archived_repositories).and_return([])
+            expect(terraform_files).not_to receive(:did_automation_add_collaborator_to_file)
             expect(@outside_collaborators).not_to receive(:add_collaborator)
             expect(@outside_collaborators).not_to receive(:change_collaborator_permission)
             expect(GithubCollaborators::SlackNotifier).not_to receive(:new)
             @outside_collaborators.full_org_members_check
           end
 
-          it "when full org member has repository mismatches" do
-            mismatch1 = {permission: "admin", repository_name: TEST_REPO_NAME1}
-            mismatch2 = {permission: "push", repository_name: TEST_REPO_NAME2}
-            mismatches = [mismatch1, mismatch2]
-            member = {login: TEST_USER_1, mismatches: mismatches}
-            expect(organization).to receive(:get_full_org_members_with_repository_permission_mismatches).and_return([member])
-            expect(organization).to receive(:get_odd_full_org_members).and_return([])
-            expect(organization).to receive(:get_full_org_members_attached_to_archived_repositories).and_return([])
-            expect(@outside_collaborators).not_to receive(:add_collaborator)
-            expect(@outside_collaborators).to receive(:change_collaborator_permission).with(TEST_USER_1, mismatches)
-            expect(GithubCollaborators::SlackNotifier).not_to receive(:new)
-            @outside_collaborators.full_org_members_check
+          context "when full org member has repository permissions mismatches" do
+            before do
+              mismatch1 = {permission: "admin", repository_name: TEST_REPO_NAME1}
+              mismatch2 = {permission: "push", repository_name: TEST_REPO_NAME2}
+              @mismatches = [mismatch1, mismatch2]
+              member = {login: TEST_USER_1, mismatches: @mismatches}
+              expect(organization).to receive(:get_full_org_members_with_repository_permission_mismatches).and_return([member])
+              expect(organization).to receive(:get_odd_full_org_members).and_return([])
+              expect(organization).to receive(:get_full_org_members_attached_to_archived_repositories).and_return([])
+              expect(@outside_collaborators).not_to receive(:add_collaborator)
+            end
+
+            it "and add the collaborator to an automation generated team" do
+              expect(terraform_files).to receive(:did_automation_add_collaborator_to_file).and_return(false).at_least(2).times
+              allow_any_instance_of(HelperModule).to receive(:add_collaborator_to_automation_generated_team).and_return(true)
+              expect(@outside_collaborators).not_to receive(:change_collaborator_permission)
+              expect(GithubCollaborators::SlackNotifier).not_to receive(:new)
+              @outside_collaborators.full_org_members_check
+            end
+
+            it "and add the collaborator to a repository team" do
+              expect(terraform_files).to receive(:did_automation_add_collaborator_to_file).and_return(false).at_least(2).times
+              allow_any_instance_of(HelperModule).to receive(:add_collaborator_to_automation_generated_team).and_return(false)
+              allow_any_instance_of(HelperModule).to receive(:add_collaborator_to_repository_team)
+              expect(@outside_collaborators).not_to receive(:change_collaborator_permission)
+              expect(GithubCollaborators::SlackNotifier).not_to receive(:new)
+              @outside_collaborators.full_org_members_check
+            end
+
+            it "and change the collaborator repository permission" do
+              expect(terraform_files).to receive(:did_automation_add_collaborator_to_file).and_return(true).at_least(2).times
+              expect(@outside_collaborators).to receive(:change_collaborator_permission).with(TEST_USER_1, @mismatches)
+              expect(GithubCollaborators::SlackNotifier).not_to receive(:new)
+              @outside_collaborators.full_org_members_check
+            end
           end
 
           it "when find a odd full org member" do
@@ -775,7 +808,7 @@ class GithubCollaborators
 
             outside_collaborators = GithubCollaborators::OutsideCollaborators.new
             expect(organization).to receive(:is_collaborator_an_org_member).and_return(TEST_USER_2).at_least(1).times
-            expect(@outside_collaborators).not_to receive(:print_comparison)
+            expect(outside_collaborators).not_to receive(:print_comparison)
             outside_collaborators.compare_terraform_and_github
           end
         end
