@@ -269,6 +269,34 @@ class GithubCollaborators
       end
     end
 
+    # Return the reason value in a TerraformBlock object for a specific collaborator
+    #
+    # @param collaborator_name [String] the collaborator login name
+    # @return [String] the reason value
+    def get_collaborator_reason(collaborator_name)
+      logger.debug "get_collaborator_reason"
+      @terraform_blocks.each do |terraform_block|
+        if terraform_block.username.downcase == collaborator_name.downcase
+          return terraform_block.reason
+        end
+      end
+      ""
+    end
+
+    # Return the added_by value in a TerraformBlock object for a specific collaborator
+    #
+    # @param collaborator_name [String] the collaborator login name
+    # @return [String] the added_by value
+    def get_collaborator_added_by(collaborator_name)
+      logger.debug "get_collaborator_added_by"
+      @terraform_blocks.each do |terraform_block|
+        if terraform_block.username.downcase == collaborator_name.downcase
+          return terraform_block.added_by
+        end
+      end
+      ""
+    end
+
     # Return the repository name from the Terraform file
     #
     # @return [String] the repository name
@@ -590,6 +618,39 @@ class GithubCollaborators
         if terraform_file.filename.downcase == tf_safe(repository_name.downcase)
           return true
         end
+      end
+      false
+    end
+
+    # Check if a collaborator in a Terraform file was added by this code
+    #
+    # @param repository_name [String] the name of the repository
+    # @param collaborator_name [String] the name of the collaborator
+    # @return [Bool] true if collaborator was added by this code
+    def did_automation_add_collaborator_to_file(repository_name, collaborator_name)
+      logger.debug "did_automation_add_collaborator_to_file"
+      @terraform_files.each do |terraform_file|
+        if terraform_file.filename.downcase == tf_safe(repository_name.downcase)
+          reason = terraform_file.get_collaborator_reason(collaborator_name.downcase)
+          added_by = terraform_file.get_collaborator_added_by(collaborator_name.downcase)
+          if reason == REASON1 && added_by == ADDED_BY_EMAIL
+            return true
+          end
+        end
+      end
+      false
+    end
+
+    # Check if a collaborator name is in a Terraform file for a specific repository
+    #
+    # @param repository_name [String] the name of the repository
+    # @param collaborator_name [String] the name of the collaborator
+    # @return [Bool] true if collaborator login within the Terraform file
+    def is_user_in_file(repository_name, collaborator_name)
+      logger.debug "is_user_in_file"
+      collaborators_in_file = get_collaborators_in_file(repository_name)
+      if collaborators_in_file.include?(collaborator_name)
+        return true
       end
       false
     end
