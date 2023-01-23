@@ -505,9 +505,9 @@ module HelperModule
 
     team_repositories = []
 
-    [1,2,3].each do |page_number|
+    [1, 2, 3].each do |page_number|
       url = "#{GH_ORG_API_URL}/teams/everyone/repos?per_page=100&page=#{page_number}"
-    
+
       json = GithubCollaborators::HttpClient.new.fetch_json(url)
       JSON.parse(json)
         .find_all { |repository| repository["name"].downcase }
