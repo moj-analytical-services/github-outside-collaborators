@@ -503,14 +503,16 @@ module HelperModule
   def get_everyone_team_repositories
     module_logger.debug "get_everyone_team_repositories"
 
-    #  Grabs 100 repositories from the team, if team has more than 100 repositories
-    # this will need to be changed to paginate through the results.
-    url = "#{GH_ORG_API_URL}/teams/everyone/repos?per_page=100"
     team_repositories = []
-    json = GithubCollaborators::HttpClient.new.fetch_json(url)
-    JSON.parse(json)
-      .find_all { |repository| repository["name"].downcase }
-      .map { |repository| team_repositories.push(repository["name"].downcase) }
+
+    [1,2,3].each do |page_number|
+      url = "#{GH_ORG_API_URL}/teams/everyone/repos?per_page=100&page=#{page_number}"
+    
+      json = GithubCollaborators::HttpClient.new.fetch_json(url)
+      JSON.parse(json)
+        .find_all { |repository| repository["name"].downcase }
+        .map { |repository| team_repositories.push(repository["name"].downcase) }
+    end
 
     team_repositories
   end

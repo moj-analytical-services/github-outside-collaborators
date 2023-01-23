@@ -118,21 +118,27 @@ class GithubCollaborators
       end
 
       context "call get_all_org_members_team_repositories" do
-        url = "#{GH_ORG_API_URL}/teams/everyone/repos?per_page=100"
+        url1 = "#{GH_ORG_API_URL}/teams/everyone/repos?per_page=100&page=1"
+        url2 = "#{GH_ORG_API_URL}/teams/everyone/repos?per_page=100&page=2"
+        url3 = "#{GH_ORG_API_URL}/teams/everyone/repos?per_page=100&page=3"
         before do
-          expect(GithubCollaborators::HttpClient).to receive(:new).and_return(http_client)
+          expect(GithubCollaborators::HttpClient).to receive(:new).and_return(http_client).at_least(3).times
         end
 
         it "when team has repositories" do
           response = %([{"name": "#{TEST_REPO_NAME1}"},{"name": "#{TEST_REPO_NAME2}"}])
-          expect(http_client).to receive(:fetch_json).with(url).and_return(response)
+          expect(http_client).to receive(:fetch_json).with(url1).and_return(response)
+          expect(http_client).to receive(:fetch_json).with(url2).and_return([].to_json)
+          expect(http_client).to receive(:fetch_json).with(url3).and_return([].to_json)
           repositories = [TEST_REPO_NAME1, TEST_REPO_NAME2]
           test_equal(helper_module.get_everyone_team_repositories, repositories)
         end
 
         it "when team has no repositories" do
           response = []
-          expect(http_client).to receive(:fetch_json).with(url).and_return(response.to_json)
+          expect(http_client).to receive(:fetch_json).with(url1).and_return(response.to_json)
+          expect(http_client).to receive(:fetch_json).with(url2).and_return(response.to_json)
+          expect(http_client).to receive(:fetch_json).with(url3).and_return(response.to_json)
           test_equal(helper_module.get_everyone_team_repositories, [])
         end
       end
