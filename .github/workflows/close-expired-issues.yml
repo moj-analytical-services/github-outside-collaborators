@@ -1,8 +1,8 @@
 name: Close expired issues
 on:
   workflow_dispatch:
-  # schedule:
-  #   - cron: "0 23 * * 2,5"
+  schedule:
+    - cron: "0 23 * * 2,5"
 
 env:
   RUBY_VERSION: 3.1.0
