@@ -1,11 +1,11 @@
 terraform {
   # `backend` blocks do not support variables, so the following are hard-coded here:
-  # - S3 bucket name, which is created [here](https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live-1.cloud-platform.service.justice.gov.uk/operations-engineering/resources/s3.tf)
-  backend "s3" {
+  # - S3 bucket name, which is created [here](https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/operations-engineering/resources/s3-ap-gh-collab-repo.tf)
+  backend "s3-ap-gh-collab-repo" {
     encrypt        = true
-    bucket         = "cloud-platform-36623f774b9641d8697d65bdf6b030f5"
+    bucket         = "cloud-platform-7432180341a66d72d042a5a59ee86291"
     region         = "eu-west-2"
-    dynamodb_table = "cp-b6970ba60ed66537"
+    dynamodb_table = "cp-aef9fedfd0102b39"
     key            = "github-outside-collaborators/terraform.tfstate"
   }
 }
