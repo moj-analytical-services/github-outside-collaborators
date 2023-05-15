@@ -5,22 +5,12 @@ module "mojspeakr" {
     {
       github_user  = "dipad-fran-bryden"
       permission   = "admin"
-      name         = "tbc"
-      email        = "tbc"
-      org          = "tbc"
-      reason       = "tbc"
+      name         = "Francesca Bryden"
+      email        = "francesca.bryden@dft.gov.uk"
+      org          = "Department for Transport"
+      reason       = "Creator and maintainer of package"
       added_by     = "Nick Walters nick.walters@digital.justice.gov.uk"
-      review_after = "2023-06-13"
-    },
-    {
-      github_user  = "brydenfrancesca"
-      permission   = "admin"
-      name         = "tbc"
-      email        = "tbc"
-      org          = "tbc"
-      reason       = "tbc"
-      added_by     = "Nick Walters nick.walters@digital.justice.gov.uk"
-      review_after = "2023-06-13"
+      review_after = "2024-06-13"
     },
   ]
 }
