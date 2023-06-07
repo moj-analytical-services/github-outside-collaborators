@@ -10,7 +10,7 @@ module "dsa_data_linking" {
       org          = "tbc"
       reason       = "tbc"
       added_by     = "Nick Walters nick.walters@digital.justice.gov.uk"
-      review_after = "2023-06-13"
+      review_after = "2023-12-10"
     },
   ]
 }
