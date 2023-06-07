@@ -242,7 +242,7 @@ class GithubCollaborators
         removed_repositories.each do |repository_name|
           repository_name = repository_name.downcase
           # filter out the all-org-members team repositories
-          if !@all_org_members_team_repositories.include?(repository_name)
+          if !@everyone_team_repositories.include?(repository_name)
             @removed_from_repositories.push(repository_name)
           end
         end
