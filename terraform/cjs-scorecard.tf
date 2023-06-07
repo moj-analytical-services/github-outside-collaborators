@@ -10,10 +10,10 @@ module "cjs-scorecard" {
       org          = "tbc"
       reason       = "tbc"
       added_by     = "Nick Walters nick.walters@digital.justice.gov.uk"
-      review_after = "2023-06-13"
+      review_after = "2023-12-10"
     },
     {
-      github_user  = "DaveAllanCPS"
+      github_user  = "daveallancps"
       permission   = "push"
       name         = "Dave Allan"
       email        = "david.allan@cps.gov.uk"
@@ -23,7 +23,7 @@ module "cjs-scorecard" {
       review_after = "2024-05-30"
     },
     {
-      github_user  = "SophieYoung11"
+      github_user  = "sophieyoung11"
       permission   = "push"
       name         = "Sophie Young"
       email        = "sophie.young@cps.gov.uk"
