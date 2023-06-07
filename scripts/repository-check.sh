@@ -8,7 +8,7 @@ if [ $len -eq 2 ]; then
    for eachfile in $yourfilenames
    do
       repo=$(basename $eachfile .tf)
-      json=$(curl -s -u $username:$token https://api.github.com/repos/ministryofjustice/$repo)
+      json=$(curl -s -u $username:$token https://api.github.com/repos/moj-analytical-services/$repo)
       found=$(echo $json | jq .message)
       if [ "$found" == '"Not Found"' ] && [ "$repo" != 'main' ] && [ "$repo" != 'versions' ] && [ "$repo" != 'variables' ];
       then echo "$repo not found"; fi
