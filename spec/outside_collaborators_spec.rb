@@ -721,7 +721,7 @@ class GithubCollaborators
           @outside_collaborators.is_renewal_within_one_month([@collaborator1])
         end
       end
-      
+
       context "call is_renewal_within_one_month when user is a full org member" do
         before do
           expect(terraform_files).to receive(:get_terraform_files).and_return([])
