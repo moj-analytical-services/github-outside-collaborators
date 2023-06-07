@@ -645,6 +645,8 @@ module HelperModule
       create_pull_request(extend_date_hash(collaborator_name, branch_name))
     elsif type == TYPE_REMOVE
       create_pull_request(remove_collaborator_hash(collaborator_name, branch_name))
+    elsif type == TYPE_REMOVE_FULL_ORG_MEMBER
+      create_pull_request(remove_full_org_member_hash(collaborator_name, branch_name))
     elsif type == TYPE_PERMISSION
       create_pull_request(modify_collaborator_permission_hash(collaborator_name, branch_name))
     elsif type == TYPE_ADD
@@ -665,12 +667,7 @@ module HelperModule
     module_logger.debug "create_pull_request"
     if ENV.fetch("REALLY_POST_TO_GH", 0) == "1"
       url = "#{GH_API_URL}/#{REPO_NAME}/pulls"
-      if ENV.fetch("OPS_BOT_TOKEN_ENABLED", 0) == "1"
-        # Use a different pull request GitHub token so A.B. can authorise automated pull requests
-        GithubCollaborators::HttpClient.new.post_pull_request_json(url, hash_body.to_json)
-      else
-        GithubCollaborators::HttpClient.new.post_json(url, hash_body.to_json)
-      end
+      GithubCollaborators::HttpClient.new.post_pull_request_json(url, hash_body.to_json)
       sleep 1
     else
       module_logger.debug "Didn't create pull request, this is a dry run"
@@ -713,6 +710,7 @@ module HelperModule
     {
       title: EXTEND_REVIEW_DATE_PR_TITLE + " " + login.downcase,
       head: branch_name.downcase,
+      draft: true,
       base: GITHUB_BRANCH,
       body: <<~EOF
         Hi there
@@ -737,6 +735,7 @@ module HelperModule
     {
       title: DELETE_REPOSITORY_PR_TITLE,
       head: branch_name.downcase,
+      draft: true,
       base: GITHUB_BRANCH,
       body: <<~EOF
         Hi there
@@ -760,6 +759,7 @@ module HelperModule
     {
       title: ARCHIVED_REPOSITORY_PR_TITLE,
       head: branch_name.downcase,
+      draft: true,
       base: GITHUB_BRANCH,
       body: <<~EOF
         Hi there
@@ -785,6 +785,7 @@ module HelperModule
     {
       title: EMPTY_FILES_PR_TITLE,
       head: branch_name.downcase,
+      draft: true,
       base: GITHUB_BRANCH,
       body: <<~EOF
         Hi there
@@ -807,6 +808,7 @@ module HelperModule
     {
       title: ADD_COLLAB_FROM_ISSUE + " " + login.downcase,
       head: branch_name.downcase,
+      draft: true,
       base: GITHUB_BRANCH,
       body: <<~EOF
         Hi there
@@ -831,6 +833,7 @@ module HelperModule
     {
       title: ADD_FULL_ORG_MEMBER_PR_TITLE + " " + login.downcase,
       head: branch_name.downcase,
+      draft: true,
       base: GITHUB_BRANCH,
       body: <<~EOF
         Hi there
@@ -859,6 +862,7 @@ module HelperModule
     {
       title: REMOVE_EXPIRED_COLLABORATOR_PR_TITLE + " " + login.downcase,
       head: branch_name.downcase,
+      draft: true,
       base: GITHUB_BRANCH,
       body: <<~EOF
         Hi there
@@ -877,11 +881,40 @@ module HelperModule
   # @param login [String] name of collaborator
   # @param branch_name [String] name of new branch
   # @return [Hash{title => String, head => String, base => String, body => String}] the message to send to GitHub
+  def remove_full_org_member_hash(login, branch_name)
+    module_logger.debug "remove_full_org_member_hash"
+    {
+      title: REMOVE_FULL_ORG_MEMBER_PR_TITLE + " " + login.downcase,
+      head: branch_name.downcase,
+      draft: true,
+      base: GITHUB_BRANCH,
+      body: <<~EOF
+        Hi there
+
+        **IMPORTANT** Approve and run this PR before any others. A collaborator repository access has been removed. Running tf apply on another PR will invite the collaborator to repository again.
+
+        This is the GitHub-Collaborator repository bot.
+
+        The full org member / collaborator #{login.downcase} access to one or more repositories has been revoked.
+
+        This is because the collaborator is a full organization member and is able to join repositories outside of Terraform via Teams.
+
+        This pull request ensures we keep track of those collaborators and which repositories they are accessing.
+      EOF
+    }
+  end
+
+  # Composes a GitHub branch structured message
+  #
+  # @param login [String] name of collaborator
+  # @param branch_name [String] name of new branch
+  # @return [Hash{title => String, head => String, base => String, body => String}] the message to send to GitHub
   def modify_collaborator_permission_hash(login, branch_name)
     module_logger.debug "modify_collaborator_permission_hash"
     {
       title: CHANGE_PERMISSION_PR_TITLE + " " + login.downcase,
       head: branch_name.downcase,
+      draft: true,
       base: GITHUB_BRANCH,
       body: <<~EOF
         Hi there
@@ -973,7 +1006,7 @@ module HelperModule
         if !json_data.dig("data", "search", "repos").nil?
           repositories = json_data.dig("data", "search", "repos")
           repositories.each do |repo|
-            archived_repositories.push(repo.dig("repo", "name"))
+            archived_repositories.push(repo.dig("repo", "name").downcase)
           end
         end
         end_cursor = json_data.dig("data", "search", "pageInfo", "endCursor")

@@ -4,7 +4,7 @@ class GithubCollaborators
   class FullOrgMember
     include Logging
     include HelperModule
-    attr_reader :login, :email, :org, :name, :missing_from_repositories, :repository_permission_mismatches, :attached_archived_repositories, :github_repositories, :terraform_repositories, :github_archived_repositories, :ignore_repositories, :everyone_team_repositories
+    attr_reader :login, :email, :org, :name, :missing_from_repositories, :removed_from_repositories, :repository_permission_mismatches, :attached_archived_repositories, :github_repositories, :terraform_repositories, :github_archived_repositories, :ignore_repositories, :everyone_team_repositories
 
     # This class covers collaborators that are full Organization members
     # Full Organization members have access to repositories via Organization teams.
@@ -28,6 +28,10 @@ class GithubCollaborators
       # This array will store the repositories where the collaborator is not defined in Terraform files
       # Array<String>
       @missing_from_repositories = []
+
+      # This array will store the Github repositories where the collaborator has been removed
+      # Array<String>
+      @removed_from_repositories = []
 
       # This array stores the everyone team repositories
       # Array<String>
@@ -190,7 +194,35 @@ class GithubCollaborators
     def missing_from_terraform_files
       logger.debug "missing_from_terraform_files"
 
-      missing_repositories = []
+      # Join the two arrays
+      repositories = @github_repositories + @terraform_repositories
+      repositories.uniq!
+      repositories.sort!
+
+      repositories.each do |repository_name|
+        repository_name = repository_name.downcase
+        # expect to find the repository name on GitHub but not in a Terraform file
+        # Filter out repositories from the everyone team and archived repositories
+        if @github_repositories.count(repository_name) > 0 &&
+            @terraform_repositories.count(repository_name) == 0 &&
+            !is_repo_already_known(repository_name)
+          @missing_from_repositories.push(repository_name)
+        end
+      end
+
+      # Result is based on any missing repositories
+      if @missing_from_repositories.length == 0
+        return false
+      end
+      true
+    end
+
+    # Check if the full org member has been removed from any GitHub repositories
+    #
+    # @return [Bool] true if full org member exists in a Terraform file but is missing from the Github repository
+    def removed_from_github_repository
+      logger.debug "removed_from_github_repository"
+      removed_repositories = []
 
       # Join the two arrays
       repositories = @github_repositories + @terraform_repositories
@@ -199,31 +231,27 @@ class GithubCollaborators
 
       repositories.each do |repository_name|
         repository_name = repository_name.downcase
-        # expect to find the repository name in both arrays
-        if @github_repositories.count(repository_name) > 0 &&
-            @terraform_repositories.count(repository_name) == 0
-          # the repository name is missing from one of the arrays
-          # therefore found a missing repository
-          missing_repositories.push(repository_name)
+        # expect to find the repository name in a Terraform file but not on Github
+        if @terraform_repositories.count(repository_name) > 0 &&
+            @github_repositories.count(repository_name) == 0
+          removed_repositories.push(repository_name)
         end
       end
 
-      if missing_repositories.length > 0
-        # Store the missing repositories to the object variable
-        missing_repositories.each do |repository_name|
+      if removed_repositories.length > 0
+        removed_repositories.each do |repository_name|
           repository_name = repository_name.downcase
-          # but filter out the everyone team repositories
-          if !@everyone_team_repositories.include?(repository_name)
-            @missing_from_repositories.push(repository_name)
+          # filter out the all-org-members team repositories
+          if !@all_org_members_team_repositories.include?(repository_name)
+            @removed_from_repositories.push(repository_name)
           end
         end
 
-        @missing_from_repositories.sort!
-        @missing_from_repositories.uniq!
+        @removed_from_repositories.sort!
+        @removed_from_repositories.uniq!
       end
 
-      # Result is based on any missing repositories
-      if @missing_from_repositories.length == 0
+      if @removed_from_repositories.length == 0
         return false
       end
       true

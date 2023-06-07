@@ -11,7 +11,7 @@ class GithubCollaborators
       }
 
       before do
-        ENV["ADMIN_GITHUB_TOKEN"] = ""
+        ENV["OPS_BOT_TOKEN"] = ""
       end
 
       let(:terraform_files) { double(GithubCollaborators::TerraformFiles) }
@@ -232,6 +232,35 @@ class GithubCollaborators
         end
       end
 
+      context "call removed_from_github_repository" do
+        it "when added no repositories" do
+          test_equal(@full_org_member.removed_from_github_repository, false)
+        end
+
+        it "when user is in a Terraform file and GitHub repo" do
+          @full_org_member.add_terraform_repositories([TEST_REPO_NAME1])
+          @full_org_member.add_github_repository(TEST_REPO_NAME1)
+          test_equal(@full_org_member.terraform_repositories.length, 1)
+          test_equal(@full_org_member.github_repositories.length, 1)
+          test_equal(@full_org_member.removed_from_github_repository, false)
+        end
+
+        it "when user is in a Terraform file but not on the GitHub repo" do
+          @full_org_member.add_terraform_repositories([TEST_REPO_NAME1])
+          test_equal(@full_org_member.terraform_repositories.length, 1)
+          test_equal(@full_org_member.github_repositories.length, 0)
+          test_equal(@full_org_member.removed_from_github_repository, true)
+        end
+
+        it "when user is in a Terraform file but not on the GitHub repo but repo is an all-org-members team repo" do
+          @full_org_member.add_terraform_repositories([TEST_REPO_NAME1])
+          @full_org_member.add_all_org_members_team_repositories([TEST_REPO_NAME1])
+          test_equal(@full_org_member.terraform_repositories.length, 1)
+          test_equal(@full_org_member.github_repositories.length, 0)
+          test_equal(@full_org_member.removed_from_github_repository, false)
+        end
+      end
+
       context "call missing_from_terraform_files" do
         it "when added no repositories" do
           test_equal(@full_org_member.missing_from_terraform_files, false)
@@ -290,6 +319,24 @@ class GithubCollaborators
             test_equal(@full_org_member.terraform_repositories.length, 2)
             test_equal(@full_org_member.missing_from_terraform_files, false)
           end
+
+          it "when github and terraform repositories do match but one repo is an archived repo" do
+            @full_org_member.add_archived_repositories([TEST_REPO_NAME1])
+            @full_org_member.get_full_org_member_repositories
+            @full_org_member.add_terraform_repositories([TEST_REPO_NAME2, TEST_REPO_NAME1, TEST_REPO_NAME3])
+            test_equal(@full_org_member.github_repositories.length, 2)
+            test_equal(@full_org_member.terraform_repositories.length, 2)
+            test_equal(@full_org_member.missing_from_terraform_files, false)
+          end
+
+          it "when repos are archived repos" do
+            @full_org_member.add_archived_repositories([TEST_REPO_NAME1, TEST_REPO_NAME2, TEST_REPO_NAME3])
+            @full_org_member.get_full_org_member_repositories
+            @full_org_member.add_terraform_repositories([TEST_REPO_NAME1, TEST_REPO_NAME2, TEST_REPO_NAME3])
+            test_equal(@full_org_member.github_repositories.length, 0)
+            test_equal(@full_org_member.terraform_repositories.length, 0)
+            test_equal(@full_org_member.missing_from_terraform_files, false)
+          end
         end
 
         context "call mismatched_repository_permissions_check" do
@@ -340,7 +387,7 @@ class GithubCollaborators
       end
 
       after do
-        ENV.delete("ADMIN_GITHUB_TOKEN")
+        ENV.delete("OPS_BOT_TOKEN")
       end
     end
   end

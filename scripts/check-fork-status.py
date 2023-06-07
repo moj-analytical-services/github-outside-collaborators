@@ -23,30 +23,42 @@ comment_message = """
 """
 
 
-def run():
+class PullRequestForked:
+    def __init__(self, oauth_token, pr_json_data):
+        self.oauth_token = oauth_token
+        self.pr_json_data = pr_json_data
+
+    def process_pull_request(self):
+        if self.pr_json_data is None or self.oauth_token is None:
+            print("Script input parameter is None")
+            sys.exit()
+        else:
+            pr_is_fork = self.pr_json_data["head"]["repo"]["fork"]
+            if pr_is_fork:
+                try:
+                    gh = Github(self.oauth_token)
+                    repo_name = "moj-analytical-services/" + \
+                        self.pr_json_data["head"]["repo"]["name"]
+                    repo = gh.get_repo(repo_name)
+                    pull = repo.get_pull(self.pr_json_data["number"])
+                    pull.create_issue_comment(comment_message)
+                    # Delay for GH API
+                    time.sleep(10)
+                    pull.edit(state="closed")
+                    return True
+                except Exception as e:
+                    print(e)
+            else:
+                return False
+
+
+# Usage example
+if __name__ == "__main__":
     oauth_token = os.getenv("TOKEN")
     pr_json_data = json.loads(os.getenv("PR_DATA"))
-    if pr_json_data is None or oauth_token is None:
-        print("Script input parameter is None")
-        sys.exit()
-    else:
-        pr_is_fork = pr_json_data["head"]["repo"]["fork"]
-        if pr_is_fork:
-            try:
-                gh = Github(oauth_token)
-                repo_name = "moj-analytical-services/" + \
-                    pr_json_data["head"]["repo"]["name"]
-                repo = gh.get_repo(repo_name)
-                pull = repo.get_pull(pr_json_data["number"])
-                pull.create_issue_comment(comment_message)
-                # Delay for GH API
-                time.sleep(10)
-                pull.edit(state="closed")
-            except Exception as e:
-                print(e)
 
-
-print("Start")
-run()
-print("Finished")
-sys.exit(0)
+    print("Start")
+    pr_processor = PullRequestForked(oauth_token, pr_json_data)
+    pr_processor.process_pull_request()
+    print("Finished")
+    sys.exit(0)

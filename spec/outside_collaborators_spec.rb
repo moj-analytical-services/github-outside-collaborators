@@ -221,6 +221,45 @@ class GithubCollaborators
           end
         end
 
+        context "call remove_full_org_member_from_terraform_files" do
+          before do
+            @full_org_member = GithubCollaborators::FullOrgMember.new(TEST_USER_1)
+          end
+
+          context "" do
+            before do
+              expect(terraform_files).not_to receive(:remove_collaborator_from_file)
+              expect(@outside_collaborators).not_to receive(:add_new_pull_request)
+            end
+
+            it "when collaborator hasn't been removed from any repositories" do
+              @outside_collaborators.remove_full_org_member_from_terraform_files(@full_org_member)
+            end
+
+            it "when a pull request already exists" do
+              @full_org_member.removed_from_repositories.push(TEST_REPO_NAME)
+              expect(@outside_collaborators).to receive(:does_pr_already_exist).and_return(true)
+              @outside_collaborators.remove_full_org_member_from_terraform_files(@full_org_member)
+            end
+
+            it "when terraform file doesn't exist" do
+              @full_org_member.removed_from_repositories.push(TEST_REPO_NAME)
+              expect(@outside_collaborators).to receive(:does_pr_already_exist).and_return(false)
+              expect(terraform_files).to receive(:does_file_exist).and_return(false)
+              @outside_collaborators.remove_full_org_member_from_terraform_files(@full_org_member)
+            end
+          end
+
+          it "and create a new PR" do
+            @full_org_member.removed_from_repositories.push(TEST_REPO_NAME)
+            expect(@outside_collaborators).to receive(:does_pr_already_exist).and_return(false)
+            expect(terraform_files).to receive(:does_file_exist).and_return(true)
+            expect(terraform_files).to receive(:remove_collaborator_from_file)
+            expect(@outside_collaborators).to receive(:add_new_pull_request).with("#{REMOVE_FULL_ORG_MEMBER_PR_TITLE} #{TEST_USER_1}", [TEST_FILE])
+            @outside_collaborators.remove_full_org_member_from_terraform_files(@full_org_member)
+          end
+        end
+
         context "call add_collaborator" do
           before do
             @full_org_member = GithubCollaborators::FullOrgMember.new(TEST_USER_1)
@@ -429,6 +468,7 @@ class GithubCollaborators
 
         it "when full org member not in terraform file" do
           outside_collaborators = GithubCollaborators::OutsideCollaborators.new
+          expect(organization).to receive(:get_full_org_members_not_on_github).and_return([])
           expect(organization).to receive(:get_full_org_members_not_in_terraform_file).and_return([@collaborator1])
           expect(organization).to receive(:get_full_org_members_with_repository_permission_mismatches).and_return([])
           expect(organization).to receive(:get_odd_full_org_members).and_return([])
@@ -440,9 +480,22 @@ class GithubCollaborators
           outside_collaborators.full_org_members_check
         end
 
+        it "when full org member not on GitHub but in terraform file so call remove_full_org_member_from_terraform_files" do
+          outside_collaborators = GithubCollaborators::OutsideCollaborators.new
+          full_org_member = GithubCollaborators::FullOrgMember.new(TEST_USER_1)
+          expect(organization).to receive(:get_full_org_members_not_on_github).and_return([full_org_member])
+          expect(outside_collaborators).to receive(:remove_full_org_member_from_terraform_files).with(full_org_member)
+          expect(organization).to receive(:get_full_org_members_not_in_terraform_file).and_return([])
+          expect(organization).to receive(:get_full_org_members_with_repository_permission_mismatches).and_return([])
+          expect(organization).to receive(:get_odd_full_org_members).and_return([])
+          expect(organization).to receive(:get_full_org_members_attached_to_archived_repositories).and_return([])
+          outside_collaborators.full_org_members_check
+        end
+
         context "" do
           before do
             expect(organization).to receive(:get_full_org_members_not_in_terraform_file).and_return([])
+            expect(organization).to receive(:get_full_org_members_not_on_github).and_return([])
             @outside_collaborators = GithubCollaborators::OutsideCollaborators.new
           end
 
@@ -640,11 +693,12 @@ class GithubCollaborators
         end
       end
 
-      context "call is_renewal_within_one_month" do
+      context "call is_renewal_within_one_month when user is non full org member" do
         before do
           expect(terraform_files).to receive(:get_terraform_files).and_return([])
           @outside_collaborators = GithubCollaborators::OutsideCollaborators.new
           expect(organization).to receive(:read_repository_issues).with(REPOSITORY_NAME).and_return([])
+          expect(organization).to receive(:is_collaborator_a_full_org_member).with(TEST_USER).and_return(false)
         end
 
         it "when collaborator issue is not renewal within a month" do
@@ -665,6 +719,22 @@ class GithubCollaborators
           allow_any_instance_of(HelperModule).to receive(:does_issue_already_exist).and_return(true)
           expect(@outside_collaborators).not_to receive(:create_review_date_expires_soon_issue)
           @outside_collaborators.is_renewal_within_one_month([@collaborator1])
+        end
+      end
+      
+      context "call is_renewal_within_one_month when user is a full org member" do
+        before do
+          expect(terraform_files).to receive(:get_terraform_files).and_return([])
+          @outside_collaborators = GithubCollaborators::OutsideCollaborators.new
+          expect(organization).to receive(:is_collaborator_a_full_org_member).with(TEST_USER).and_return(true)
+        end
+
+        it "do not create an issue" do
+          terraform_block = create_terraform_block_review_date_more_than_month
+          collaborator = GithubCollaborators::Collaborator.new(terraform_block, REPOSITORY_NAME)
+          collaborator.check_for_issues
+          expect(@outside_collaborators).not_to receive(:create_review_date_expires_soon_issue)
+          @outside_collaborators.is_renewal_within_one_month([collaborator])
         end
       end
     end
@@ -758,11 +828,6 @@ class GithubCollaborators
                 @outside_collaborators.deleted_repository_check
               end
             end
-            # it "when pull request exists" do
-            #   allow_any_instance_of(OutsideCollaborators).to receive(:does_pr_already_exist).with(TEST_REPO_NAME_TERRAFORM_FILE, "#{ARCHIVED_REPOSITORY_PR_TITLE}").and_return(true)
-            #   expect(terraform_files).not_to receive(:remove_file)
-            #   @outside_collaborators.deleted_repository_check
-            # end
           end
         end
 
