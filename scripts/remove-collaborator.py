@@ -2,7 +2,7 @@ import sys
 import traceback
 from github import Github
 
-MINISTRYOFJUSTICE = "moj-analytical-services/"
+ORG_NAME = "moj-analytical-services/"
 
 if len(sys.argv) == 4:
     # Get the GH Action token
@@ -35,7 +35,7 @@ def create_an_issue(user_name, repository_name):
     """
     try:
         gh = Github(oauth_token)
-        repo = gh.get_repo(MINISTRYOFJUSTICE + repository_name)
+        repo = gh.get_repo(ORG_NAME + repository_name)
         if repo.has_issues:
             repo.create_issue(
                 title="Collaborator Removed",
@@ -56,7 +56,7 @@ def remove_user_from_repository(user_name, repository_name):
     """
     try:
         gh = Github(oauth_token)
-        repo = gh.get_repo(MINISTRYOFJUSTICE + repository_name)
+        repo = gh.get_repo(ORG_NAME + repository_name)
         repo.remove_from_collaborators(user_name)
         print("Removing the user " + user_name +
               " from the repository: " + repository_name)

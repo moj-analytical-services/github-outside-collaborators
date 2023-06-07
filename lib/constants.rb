@@ -46,6 +46,9 @@ module Constants
   TYPE_REMOVE = "remove"
 
   # Pull request type
+  TYPE_REMOVE_FULL_ORG_MEMBER = "remove_full_org_member"
+
+  # Pull request type
   TYPE_PERMISSION = "permission"
 
   # Pull request type
@@ -91,6 +94,9 @@ module Constants
   ADD_FULL_ORG_MEMBER_PR_TITLE = "Add full Org member / collaborator to Terraform file/s for"
 
   # Pull request title
+  REMOVE_FULL_ORG_MEMBER_PR_TITLE = "Remove full Org member collaborator from Terraform file/s for"
+
+  # Pull request title
   ADD_COLLAB_FROM_ISSUE = "Add collaborator to Terraform file/s from Issue for"
 
   # Pull request title
@@ -107,6 +113,9 @@ module Constants
 
   # Pull request title
   DELETE_REPOSITORY_PR_TITLE = "Delete repository Terraform file/s"
+
+  # Pull request title
+  MULITPLE_COLLABORATORS_PR_TITLE = "Add multiple collaborators from issue"
 
   # Collaborator data issue
   USERNAME_MISSING = "Collaborator username is missing"
@@ -159,20 +168,26 @@ module Constants
   # Branch name
   ADD_COLLABORATOR_BRANCH_NAME = "add-collaborator-"
 
+  # Branch name
+  REMOVE_FULL_ORG_MEMBER_BRANCH_NAME = "remove-full-org-member-"
+
   # Organization name
   ORG = "moj-analytical-services"
 
+  # The GH API URL
+  GH_URL = "https://api.github.com"
+
   # The GitHub API URL for repositories
-  GH_API_URL = "https://api.github.com/repos/#{ORG}"
+  GH_API_URL = "#{GH_URL}/repos/#{ORG}"
 
   # The GitHub API URL for organisation
-  GH_ORG_API_URL = "https://api.github.com/orgs/#{ORG}"
+  GH_ORG_API_URL = "#{GH_URL}/orgs/#{ORG}"
 
   # The GitHub Organization URL
   GH_ORG_URL = "https://github.com/#{ORG}"
 
   # The GitHub GraphQL API URL
-  GRAPHQL_URI = "https://api.github.com/graphql"
+  GRAPHQL_URI = "#{GH_URL}/graphql"
 
   # Days in a year
   YEAR = 365
