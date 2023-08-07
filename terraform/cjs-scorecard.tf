@@ -9,7 +9,7 @@ module "cjs-scorecard" {
       email        = "david.allan@cps.gov.uk"
       org          = "CPS"
       reason       = "They provide us data, and we are sharing access to the code we use to process and validate their data to help with their quality assurance processes"
-      added_by     = "Katherine Breeze katharine.breeze@justice.gov.uk"
+      added_by     = "katharine.breeze@justice.gov.uk"
       review_after = "2024-05-30"
     },
     {
@@ -19,7 +19,7 @@ module "cjs-scorecard" {
       email        = "sophie.young@cps.gov.uk"
       org          = "CPS"
       reason       = "They provide us data, and we are sharing access to the code we use to process and validate their data to help with their quality assurance processes"
-      added_by     = "Katherine Breeze katharine.breeze@justice.gov.uk"
+      added_by     = "katharine.breeze@justice.gov.uk"
       review_after = "2024-05-30"
     },
   ]
