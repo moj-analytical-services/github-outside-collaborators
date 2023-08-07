@@ -496,10 +496,9 @@ class GithubCollaborators
       context CALL_CREATE_PULL_REQUEST do
         before do
           ENV["REALLY_POST_TO_GH"] = "1"
-          ENV["OPS_BOT_TOKEN_ENABLED"] = "1"
         end
 
-        it "when post to github and ops eng bot env variables are set" do
+        it "when post to github env variable is set" do
           expect(GithubCollaborators::HttpClient).to receive(:new).and_return(http_client)
           expect(http_client).to receive(:post_pull_request_json).with(pull_request_url, "".to_json)
           helper_module.create_pull_request("")
@@ -507,7 +506,6 @@ class GithubCollaborators
 
         after do
           ENV.delete("REALLY_POST_TO_GH")
-          ENV.delete("OPS_BOT_TOKEN_ENABLED")
         end
       end
 
@@ -1090,6 +1088,45 @@ class GithubCollaborators
         it "when no collaborator on github" do
           unknown_collaborators = helper_module.find_unknown_collaborators([TEST_USER_2], [], TEST_REPO_NAME2)
           test_equal(unknown_collaborators.length, 0)
+        end
+
+        context "call send_collaborator_expire_notify_email" do
+          let(:notify_client) { double(GithubCollaborators::NotifyClient) }
+          let(:undelivered_notify_email_slack_message) { double(GithubCollaborators::UndeliveredNotifyEmail) }
+
+          before do
+            expect(GithubCollaborators::NotifyClient).to receive(:new).and_return(notify_client)
+            # Stub sleep
+            allow_any_instance_of(helper_module).to receive(:sleep)
+            terraform_block = create_terraform_block_review_date_empty
+            @collaborator = GithubCollaborators::Collaborator.new(terraform_block, REPOSITORY_NAME)
+          end
+
+          it "with no collaborator objects" do
+            expect(notify_client).not_to receive(:send_expire_email)
+            expect(notify_client).not_to receive(:check_for_undelivered_expire_emails)
+            helper_module.send_collaborator_expire_notify_email([])
+          end
+
+          it "with a collaborator object and sent the email okay" do
+            expect(notify_client).to receive(:send_expire_email).with(TEST_COLLABORATOR_EMAIL, REPOSITORY_NAME)
+            expect(notify_client).to receive(:check_for_undelivered_expire_emails).and_return([])
+            helper_module.send_collaborator_expire_notify_email([@collaborator])
+          end
+
+          it "with a collaborator object, notify failed to send the email, and returns known email" do
+            expect(notify_client).to receive(:send_expire_email).with(TEST_COLLABORATOR_EMAIL, REPOSITORY_NAME)
+            expect(notify_client).to receive(:check_for_undelivered_expire_emails).and_return([TEST_COLLABORATOR_EMAIL, TEST_COLLABORATOR_EMAIL])
+            expect(GithubCollaborators::SlackNotifier).to receive(:new).with(instance_of(GithubCollaborators::UndeliveredNotifyEmail), [@collaborator]).and_return(undelivered_notify_email_slack_message)
+            expect(undelivered_notify_email_slack_message).to receive(:post_slack_message)
+            helper_module.send_collaborator_expire_notify_email([@collaborator])
+          end
+
+          it "with a collaborator object, notify failed to send the email, but returns an unknown email" do
+            expect(notify_client).to receive(:send_expire_email).with(TEST_COLLABORATOR_EMAIL, REPOSITORY_NAME)
+            expect(notify_client).to receive(:check_for_undelivered_expire_emails).and_return(["random-email@org.com"])
+            helper_module.send_collaborator_expire_notify_email([@collaborator])
+          end
         end
 
         it "when collaborator on github and in terraform file" do

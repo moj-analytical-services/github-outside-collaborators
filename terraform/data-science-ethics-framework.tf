@@ -9,7 +9,7 @@ module "data-science-ethics-framework" {
       email        = "mkatell@turing.ac.uk"
       org          = "The Alan Turing Institute"
       reason       = "To collaborate on the MoJ's Data Science Ethics Framework"
-      added_by     = "sheilz81  sheila.ladva@justice.gov.uk"
+      added_by     = "sheila.ladva@justice.gov.uk"
       review_after = "2024-07-11"
     },
     {
@@ -19,7 +19,7 @@ module "data-science-ethics-framework" {
       email        = "cburr@turing.ac.uk"
       org          = "The Alan Turing Institute"
       reason       = "To collaborate on the MoJ's Data Science Ethics Framework"
-      added_by     = "sheilz81  sheila.ladva@justice.gov.uk"
+      added_by     = "sheila.ladva@justice.gov.uk"
       review_after = "2024-07-11"
     },
     {
@@ -29,7 +29,7 @@ module "data-science-ethics-framework" {
       email        = "shadjiloizou@turing.ac.uk"
       org          = "The Alan Turing Institute"
       reason       = "To collaborate on the MoJ's Data Science Ethics Framework"
-      added_by     = "sheilz81  sheila.ladva@justice.gov.uk"
+      added_by     = "sheila.ladva@justice.gov.uk"
       review_after = "2024-07-11"
     },
   ]
