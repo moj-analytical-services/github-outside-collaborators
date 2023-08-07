@@ -236,4 +236,11 @@ module Constants
 
   # Description given to automated generated teams
   AUTOMATED_GENERATED_TEAM = "Automated generated team to grant users access to this repository"
+
+  # Notify template ID value
+  EXPIRE_EMAIL_TEMPLATE_ID = "7a23a323-5b67-4793-a682-3cb2c6bae9b7"
+
+  # Notify reply email ID value
+  OPERATIONS_ENGINEERING_EMAIL_ID = "6767e190-996f-462c-b7f8-9bafe7b96a01"
+
 end
