@@ -1,7 +1,7 @@
 # The GithubCollaborators class namespace
 class GithubCollaborators
-  # The UndeliveredExpireNotifyEmail class
-  class UndeliveredExpireNotifyEmail
+  # The UndeliveredApproverNotifyEmail class
+  class UndeliveredApproverNotifyEmail
     include Logging
 
     # Creates a line to be used within a Slack message using app data
@@ -10,7 +10,7 @@ class GithubCollaborators
     # @return [String] the formatted string
     def create_line(collaborator)
       logger.debug "create_line"
-      "- #{collaborator.login.downcase} in <#{collaborator.repo_url.downcase}|#{collaborator.repository.downcase}> see <#{collaborator.href}|terraform file>"
+      "- #{collaborator.email.downcase}"
     end
 
     # Creates the first line to be used within a Slack message when a single
@@ -18,7 +18,7 @@ class GithubCollaborators
     #
     # @return [String] the formatted string
     def singular_message
-      "Notify failed to email a collaborator whose review date expires next week, see if the collaborator still require access"
+      "Undelivered Notify email to approver"
     end
 
     # Creates the first line to be used within a Slack message when a multiple
@@ -27,7 +27,7 @@ class GithubCollaborators
     # @param collaborators [Numeric] the number of collaborators in the message
     # @return [String] the formatted string
     def multiple_message(collaborators)
-      "Notify failed to email #{collaborators} collaborator whose review date expire next week, see if these collaborator still require access"
+      "Undelivered Notify email to approver"
     end
   end
 end

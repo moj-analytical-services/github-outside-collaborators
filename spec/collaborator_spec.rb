@@ -1,5 +1,8 @@
 class GithubCollaborators
   describe Collaborator do
+    include TestConstants
+    include Constants
+
     context "test Collaborator" do
       context "call check_for_issues" do
         it "when review date is missing" do
