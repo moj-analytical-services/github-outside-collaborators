@@ -893,7 +893,7 @@ module HelperModule
 
         **IMPORTANT** Approve and run this PR before any others. A collaborator repository access has been removed. Running tf apply on another PR will invite the collaborator to repository again.
 
-        This is the GitHub-Collaborator repository bot.
+        This is the GitHub-Outside-Collaborator repository bot.
 
         The full org member / collaborator #{login.downcase} access to one or more repositories has been revoked.
 
