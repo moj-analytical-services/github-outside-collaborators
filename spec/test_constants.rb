@@ -63,4 +63,5 @@ module TestConstants
   STUB_TERRAFORM_FILES = "GithubCollaborators::TerraformFiles::TERRAFORM_FILES"
   NOTIFY_TEST_API_TOKEN = "123456"
   NOTIFY_PROD_API_TOKEN = "654321"
+  TEST_SPEC_FILE = "spec/fixtures/#{REPOSITORY_NAME}.tf"
 end
