@@ -38,12 +38,12 @@ class GithubCollaborators
 
       it "singular message" do
         line = expired.singular_message
-        test_equal(line, "I've found a collaborator whose review date has expired, a pull request has been created to remove the collaborator")
+        test_equal(line, "I've found a collaborator whose review date has expired, a pull request has been created to remove the collaborator. Notify has emailed the user")
       end
 
       it "multiple message" do
         line = expired.multiple_message(4)
-        test_equal(line, "I've found 4 collaborators whose review dates have expired, pull requests have been created to remove these collaborators")
+        test_equal(line, "I've found 4 collaborators whose review dates have expired, pull requests have been created to remove these collaborators. Notify has emailed these users")
       end
     end
   end
