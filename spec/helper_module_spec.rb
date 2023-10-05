@@ -1132,7 +1132,7 @@ class GithubCollaborators
               expect(notify_client).to receive(:send_expire_email).with(TEST_COLLABORATOR_EMAIL, [REPOSITORY_NAME, TEST_REPO_NAME])
               recent_emails = [{content: "Email content old-repo", email: TEST_RANDOM_EMAIL}]
               expect(notify_client).to receive(:get_recently_delivered_emails).and_return(recent_emails)
-              helper_module.send_collaborator_notify_email([@collaborator, @collaborator1])
+              helper_module.send_collaborator_expire_notify_email([@collaborator, @collaborator1])
             end
           end
 
