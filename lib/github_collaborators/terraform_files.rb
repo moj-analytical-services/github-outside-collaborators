@@ -22,25 +22,6 @@ class GithubCollaborators
       @defined_in_terraform = true
     end
 
-    # Add collaborator details to the TerraformBlock. This
-    # is called when the collaborator who is also a full
-    # Organization member is missing from a Terraform file
-    #
-    # @param collaborator [GithubCollaborators::Collaborator] a collaborator object
-    # @param repository_permission [String] the access permission to the repository
-    def add_org_member_collaborator_data(collaborator, repository_permission)
-      logger.debug "add_org_member_collaborator_data"
-      @username = collaborator.login.downcase
-      @permission = repository_permission
-      @email = collaborator.email
-      @name = collaborator.name
-      @org = collaborator.org
-      @reason = REASON1
-      @added_by = ADDED_BY_EMAIL
-      review_date = (Date.today + 90).strftime(DATE_FORMAT)
-      @review_after = review_date.to_s
-    end
-
     # Add collaborator name to the TerraformBlock. This is not used, keeping it,
     # in case create PR's for unknown GitHub collaborators at the moment they are
     # removed automatically and the add_unknown_collaborator_data is used instead.
@@ -162,19 +143,6 @@ class GithubCollaborators
       @terraform_modified_blocks.clear
     end
 
-    # Add a collaborator who is also a full Organization member
-    # information to a TerraformBlock. This is called when the
-    # collaborator is missing from a Terraform file
-    #
-    # @param collaborator [GithubCollaborators::Collaborator] a collaborator object
-    # @param permission [String] the access permission to the repository
-    def add_org_member_collaborator(collaborator, permission)
-      logger.debug "add_org_member_collaborator"
-      block = GithubCollaborators::TerraformBlock.new
-      block.add_org_member_collaborator_data(collaborator, permission)
-      @terraform_blocks.push(block)
-      @add_removed_terraform_blocks.push({added: true, removed: false, block: block.clone, index: @terraform_blocks.index(block)})
-    end
 
     # Add a collaborator from an GitHub issue to a
     # TerraformBlock. This is called outside of the
@@ -268,7 +236,7 @@ class GithubCollaborators
     # @param collaborator_name [String] the collaborator login name
     # @param permission [String] the repository access permission
     def change_collaborator_permission(collaborator_name, permission)
-      logger.debug "get_collaborator_permission"
+      logger.debug "change_collaborator_permission"
       @terraform_blocks.each do |terraform_block|
         if terraform_block.username.downcase == collaborator_name.downcase
           @terraform_modified_blocks.push(terraform_block.clone)
@@ -566,25 +534,6 @@ class GithubCollaborators
           terraform_file.change_collaborator_permission(collaborator_name.downcase, repository_permission)
           terraform_file.write_to_file
           terraform_file.revert_terraform_blocks
-        end
-      end
-    end
-
-    # Call the functions to change the add a collaborator who also has
-    # full Organization membership to a TerraformFile object,then write
-    # that Terraform file in the Terraform folder and revert the
-    # TerraformFile object back to its original state.
-    #
-    # @param repository_name [String] the name of the repository to modify
-    # @param collaborator [GithubCollaborators::Collaborator] a collaborator object
-    # @param repository_permission [String] the repository access permission
-    def add_full_org_collaborator_to_file(repository_name, collaborator, repository_permission)
-      logger.debug "add_full_org_collaborator_to_file"
-      @terraform_files.each do |terraform_file|
-        if terraform_file.filename.downcase == tf_safe(repository_name.downcase)
-          terraform_file.add_org_member_collaborator(collaborator, repository_permission)
-          terraform_file.write_to_file
-          terraform_file.restore_terraform_blocks
         end
       end
     end

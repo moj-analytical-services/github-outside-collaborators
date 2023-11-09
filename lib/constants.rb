@@ -18,11 +18,8 @@ module Constants
   # Operations Engineering Bot name
   OPS_ENG_BOT_NAME = "Operations Engineering Bot"
 
-  # The reason why a full organisation collaborator is missing from a Terraform file
-  REASON1 = "Full Org member / collaborator missing from Terraform file"
-
   # The reason why a collaborator is missing from a Terraform file
-  REASON2 = "Collaborator missing from Terraform file"
+  REASON1 = "Collaborator missing from Terraform file"
 
   # The Terraform files to exclude, these are not part of the app
   EXCLUDE_FILES = ["main.tf", "variables.tf", "versions.tf", "backend.tf"]
@@ -44,9 +41,6 @@ module Constants
 
   # Pull request type
   TYPE_REMOVE = "remove"
-
-  # Pull request type
-  TYPE_REMOVE_FULL_ORG_MEMBER = "remove_full_org_member"
 
   # Pull request type
   TYPE_PERMISSION = "permission"
@@ -89,12 +83,6 @@ module Constants
 
   # Pull request title
   EMPTY_FILES_PR_TITLE = "Delete empty Terraform file/s"
-
-  # Pull request title
-  ADD_FULL_ORG_MEMBER_PR_TITLE = "Add full Org member / collaborator to Terraform file/s for"
-
-  # Pull request title
-  REMOVE_FULL_ORG_MEMBER_PR_TITLE = "Remove full Org member collaborator from Terraform file/s for"
 
   # Pull request title
   ADD_COLLAB_FROM_ISSUE = "Add collaborator to Terraform file/s from Issue for"
@@ -167,9 +155,6 @@ module Constants
 
   # Branch name
   ADD_COLLABORATOR_BRANCH_NAME = "add-collaborator-"
-
-  # Branch name
-  REMOVE_FULL_ORG_MEMBER_BRANCH_NAME = "remove-full-org-member-"
 
   # Organization name
   ORG = "moj-analytical-services"
