@@ -145,6 +145,11 @@ module TestHelpers
     }
   end
 
+  def create_terraform_block_with_username(username)
+    review_date = (Date.today - 1).strftime(DATE_FORMAT).to_s
+    create_test_data(review_date)
+  end
+
   def create_test_data(review_date)
     collaborator_data = create_collaborator_data(review_date)
     create_terraform_block(collaborator_data)

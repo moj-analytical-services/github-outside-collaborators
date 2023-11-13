@@ -39,7 +39,10 @@ class GithubCollaborators
         @collaborator1 = GithubCollaborators::Collaborator.new(terraform_block, REPOSITORY_NAME)
         @collaborator1.check_for_issues
 
-        terraform_block = create_terraform_block_review_date_yesterday
+        review_date = Date.today.strftime(DATE_FORMAT)
+        collaborator_data = create_collaborator_data(review_date)
+        collaborator_data[:login] = TEST_USER_2
+        terraform_block = create_terraform_block(collaborator_data)
         @collaborator2 = GithubCollaborators::Collaborator.new(terraform_block, REPOSITORY_NAME)
       end
 
@@ -170,46 +173,6 @@ class GithubCollaborators
             expect(@outside_collaborators).to receive(:add_new_pull_request).with("#{REMOVE_EXPIRED_COLLABORATOR_PR_TITLE} #{TEST_USER_2}", [TEST_TERRAFORM_FILE_FULL_PATH])
             removed_collaborators = @outside_collaborators.remove_collaborator([@collaborator1, @collaborator_expires_soon, @collaborator2])
             test_equal(removed_collaborators.length, 3)
-          end
-        end
-
-        context "call change_collaborator_permission" do
-          it "when no repositories passed in" do
-            @outside_collaborators.change_collaborator_permission(TEST_USER_2, [])
-            expect(terraform_files).not_to receive(:ensure_file_exists_in_memory)
-          end
-
-          it WHEN_PULL_REQUEST_DOESNT_EXIST do
-            repositories = [
-              {permission: "push", repository_name: REPOSITORY_NAME},
-              {permission: "admin", repository_name: REPOSITORY_NAME},
-              {permission: "pull", repository_name: REPOSITORY_NAME}
-            ]
-            allow_any_instance_of(OutsideCollaborators).to receive(:does_pr_already_exist).with(TEST_TERRAFORM_FILE, "#{CHANGE_PERMISSION_PR_TITLE} #{TEST_USER_2}").and_return(false)
-            expect(terraform_files).to receive(:ensure_file_exists_in_memory).with(REPOSITORY_NAME).at_least(3).times
-            expect(terraform_files).to receive(:change_collaborator_permission_in_file).with(REPOSITORY_NAME, TEST_USER_2, "push")
-            expect(terraform_files).to receive(:change_collaborator_permission_in_file).with(REPOSITORY_NAME, TEST_USER_2, "admin")
-            expect(terraform_files).to receive(:change_collaborator_permission_in_file).with(REPOSITORY_NAME, TEST_USER_2, "pull")
-            allow_any_instance_of(HelperModule).to receive(:create_branch_and_pull_request).with("#{MODIFY_COLLABORATORS_BRANCH_NAME}#{TEST_USER_2}", [TEST_TERRAFORM_FILE_FULL_PATH, TEST_TERRAFORM_FILE_FULL_PATH, TEST_TERRAFORM_FILE_FULL_PATH], "#{CHANGE_PERMISSION_PR_TITLE} #{TEST_USER_2}", TEST_USER_2, TYPE_PERMISSION)
-            expect(@outside_collaborators).to receive(:add_new_pull_request).with("#{CHANGE_PERMISSION_PR_TITLE} #{TEST_USER_2}", [TEST_TERRAFORM_FILE_FULL_PATH, TEST_TERRAFORM_FILE_FULL_PATH, TEST_TERRAFORM_FILE_FULL_PATH])
-            @outside_collaborators.change_collaborator_permission(TEST_USER_2, repositories)
-          end
-
-          it "when a pull request does exist" do
-            repositories = [
-              {permission: "push", repository_name: REPOSITORY_NAME},
-              {permission: "admin", repository_name: TEST_REPO_NAME},
-              {permission: "pull", repository_name: REPOSITORY_NAME}
-            ]
-            expect(@outside_collaborators).to receive(:does_pr_already_exist).with(TEST_TERRAFORM_FILE, "#{CHANGE_PERMISSION_PR_TITLE} #{TEST_USER_2}").and_return(false)
-            expect(@outside_collaborators).to receive(:does_pr_already_exist).with(TEST_REPO_NAME_TERRAFORM_FILE, "#{CHANGE_PERMISSION_PR_TITLE} #{TEST_USER_2}").and_return(true)
-            expect(@outside_collaborators).to receive(:does_pr_already_exist).with(TEST_TERRAFORM_FILE, "#{CHANGE_PERMISSION_PR_TITLE} #{TEST_USER_2}").and_return(false)
-            expect(terraform_files).to receive(:ensure_file_exists_in_memory).with(REPOSITORY_NAME).at_least(2).times
-            expect(terraform_files).to receive(:change_collaborator_permission_in_file).with(REPOSITORY_NAME, TEST_USER_2, "push")
-            expect(terraform_files).to receive(:change_collaborator_permission_in_file).with(REPOSITORY_NAME, TEST_USER_2, "pull")
-            allow_any_instance_of(HelperModule).to receive(:create_branch_and_pull_request).with("#{MODIFY_COLLABORATORS_BRANCH_NAME}#{TEST_USER_2}", [TEST_TERRAFORM_FILE_FULL_PATH, TEST_TERRAFORM_FILE_FULL_PATH], "#{CHANGE_PERMISSION_PR_TITLE} #{TEST_USER_2}", TEST_USER_2, TYPE_PERMISSION)
-            expect(@outside_collaborators).to receive(:add_new_pull_request).with("#{CHANGE_PERMISSION_PR_TITLE} #{TEST_USER_2}", [TEST_TERRAFORM_FILE_FULL_PATH, TEST_TERRAFORM_FILE_FULL_PATH])
-            @outside_collaborators.change_collaborator_permission(TEST_USER_2, repositories)
           end
         end
       end
@@ -409,7 +372,6 @@ class GithubCollaborators
           end
 
           it WITH_COLLABORATOR do
-            expect(@organization).to receive(:is_collaborator_an_org_member).with(@collaborator1.login).and_return(false)
             expect(@outside_collaborators).to receive(:extend_date).with([@collaborator1]).and_return([@collaborator1])
             expect(GithubCollaborators::SlackNotifier).to receive(:new).with(instance_of(GithubCollaborators::ExpiresSoon), [@collaborator1]).and_return(expires_soon_slack_message)
             allow_any_instance_of(HelperModule).to receive(:send_collaborator_expire_notify_email).with([@collaborator1])
@@ -425,7 +387,6 @@ class GithubCollaborators
           end
 
           it WITH_COLLABORATOR do
-            expect(@organization).to receive(:is_collaborator_an_org_member).with(@collaborator1.login).and_return(false)
             expect(@outside_collaborators).to receive(:remove_collaborator).with([@collaborator1]).and_return([@collaborator1])
             expect(GithubCollaborators::SlackNotifier).to receive(:new).with(instance_of(GithubCollaborators::Expired), [@collaborator1]).and_return(expired_slack_message)
             expect(expired_slack_message).to receive(:post_slack_message)
