@@ -697,37 +697,6 @@ module HelperModule
     }
   end
 
-  # Composes a GitHub branch structured message
-  #
-  # @param login [String] name of collaborator
-  # @param branch_name [String] name of new branch
-  # @return [Hash{title => String, head => String, base => String, body => String}] the message to send to GitHub
-  def modify_collaborator_permission_hash(login, branch_name)
-    module_logger.debug "modify_collaborator_permission_hash"
-    {
-      title: CHANGE_PERMISSION_PR_TITLE + " " + login.downcase,
-      head: branch_name.downcase,
-      draft: true,
-      base: GITHUB_BRANCH,
-      body: <<~EOF
-        Hi there
-        
-        This is the GitHub-Outside-Collaborator repository bot.
-        
-        The collaborator #{login.downcase} permission on Github is different to the permission in the Terraform file for the repository.
-        
-        This is because the collaborator is a full organization member, is able to join repositories outside of Terraform and may have different access to the repository now they are in a Team.
-        
-        The permission on Github is given the priority.
-        
-        This pull request ensures we keep track of those collaborators, which repositories they are accessing and their permission.
-        
-        Permission can either be admin, push, maintain, pull or triage.
-        
-      EOF
-    }
-  end
-
   # Create a list of Repository objects which are not disabled or archived
   #
   # @return [Array<GithubCollaborators::Repository>] list of Repository objects

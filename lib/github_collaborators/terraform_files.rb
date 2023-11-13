@@ -177,8 +177,6 @@ class GithubCollaborators
       @add_removed_terraform_blocks.each do |original_block|
         if original_block[:removed]
           @terraform_blocks.insert(original_block[:index], original_block[:block])
-        elsif original_block[:added]
-          @terraform_blocks.delete_at(original_block[:index])
         end
       end
       @add_removed_terraform_blocks.clear
