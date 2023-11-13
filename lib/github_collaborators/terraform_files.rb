@@ -22,21 +22,6 @@ class GithubCollaborators
       @defined_in_terraform = true
     end
 
-    # Add collaborator name to the TerraformBlock. This is not used, keeping it,
-    # in case create PR's for unknown GitHub collaborators at the moment they are
-    # removed automatically and the add_unknown_collaborator_data is used instead.
-    #
-    # @param collaborator_name [String] the name of the collaborator
-    def add_missing_collaborator_data(collaborator_name)
-      logger.debug "add_missing_collaborator_data"
-      @username = collaborator_name.to_s.downcase
-      @reason = REASON2
-      @added_by = ADDED_BY_EMAIL
-      review_date = (Date.today + 90).strftime(DATE_FORMAT)
-      @review_after = review_date.to_s
-      @defined_in_terraform = false
-    end
-
     # Add collaborator name to the TerraformBlock. This is called when a
     # collaborator is found on GitHub but not defined in a Terraform file.
     #
@@ -213,50 +198,6 @@ class GithubCollaborators
       else
         logger.error("Read file #{@file_path} does not exist")
       end
-    end
-
-    # Return the repository access permission from a
-    # TerraformBlock object for a specific collaborator
-    #
-    # @param collaborator_name [String] the collaborator login name
-    # @return [String] the repository access permission
-    def get_collaborator_permission(collaborator_name)
-      logger.debug "get_collaborator_permission"
-      @terraform_blocks.each do |terraform_block|
-        if terraform_block.username.downcase == collaborator_name.downcase
-          return terraform_block.permission
-        end
-      end
-      ""
-    end
-
-    # Temporarily overwrite the repository access permission within
-    # a TerraformBlock object for a specific collaborator
-    #
-    # @param collaborator_name [String] the collaborator login name
-    # @param permission [String] the repository access permission
-    def change_collaborator_permission(collaborator_name, permission)
-      logger.debug "change_collaborator_permission"
-      @terraform_blocks.each do |terraform_block|
-        if terraform_block.username.downcase == collaborator_name.downcase
-          @terraform_modified_blocks.push(terraform_block.clone)
-          terraform_block.permission = permission
-        end
-      end
-    end
-
-    # Return the reason value in a TerraformBlock object for a specific collaborator
-    #
-    # @param collaborator_name [String] the collaborator login name
-    # @return [String] the reason value
-    def get_collaborator_reason(collaborator_name)
-      logger.debug "get_collaborator_reason"
-      @terraform_blocks.each do |terraform_block|
-        if terraform_block.username.downcase == collaborator_name.downcase
-          return terraform_block.reason
-        end
-      end
-      ""
     end
 
     # Return the added_by value in a TerraformBlock object for a specific collaborator
