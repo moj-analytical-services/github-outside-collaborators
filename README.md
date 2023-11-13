@@ -93,7 +93,7 @@ Here's an example:
       email        = "name@acme.com"
       org          = "Acme. Corp."
       reason       = "Acme are building some stuff for us"
-      added_by     = "Team Name <team-name@digital.justice.gov.uk>"
+      added_by     = "team-name@digital.justice.gov.uk"
       review_after = "2021-11-26"
     },
   ]

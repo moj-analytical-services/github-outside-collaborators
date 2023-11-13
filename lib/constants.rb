@@ -9,9 +9,6 @@ module Constants
   # Name of the repository
   REPO_NAME = "github-outside-collaborators"
 
-  # Operations Engineering Bot account email address
-  ADDED_BY_EMAIL = "opseng-bot@digital.justice.gov.uk"
-
   # GitHub Bot account email address
   GITHUB_BOT_EMAIL = "github-actions[bot]@users.noreply.github.com"
 
@@ -41,9 +38,6 @@ module Constants
 
   # Pull request type
   TYPE_REMOVE = "remove"
-
-  # Pull request type
-  TYPE_PERMISSION = "permission"
 
   # Pull request type
   TYPE_ADD_FROM_ISSUE = "add_from_issue"
@@ -89,9 +83,6 @@ module Constants
 
   # Pull request title
   REMOVE_EXPIRED_COLLABORATOR_PR_TITLE = "Remove expired collaborator from Terraform file/s for"
-
-  # Pull request title
-  CHANGE_PERMISSION_PR_TITLE = "Modify permission in Terraform file/s for"
 
   # Pull request title
   ARCHIVED_REPOSITORY_PR_TITLE = "Delete archived repository Terraform file/s"
@@ -146,12 +137,6 @@ module Constants
 
   # Branch name
   REMOVE_EXPIRED_COLLABORATORS_BRANCH_NAME = "remove-expired-collaborator-"
-
-  # Branch name
-  MODIFY_COLLABORATORS_BRANCH_NAME = "modify-collaborator-permission-"
-
-  # Branch name
-  ADD_COLLABORATOR_BRANCH_NAME = "add-collaborator-"
 
   # Organization name
   ORG = "moj-analytical-services"
@@ -215,9 +200,6 @@ module Constants
 
   # Line offset number
   REVIEW_AFTER = 7
-
-  # Description given to automated generated teams
-  AUTOMATED_GENERATED_TEAM = "Automated generated team to grant users access to this repository"
 
   # Notify template ID value
   EXPIRE_EMAIL_TEMPLATE_ID = "7a23a323-5b67-4793-a682-3cb2c6bae9b7"

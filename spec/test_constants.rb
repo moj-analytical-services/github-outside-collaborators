@@ -19,12 +19,11 @@ module TestConstants
   TEST_REPO_NAME = "test-repo"
   TEST_REPO_NAME_TERRAFORM_FILE = "#{TEST_REPO_NAME}.tf"
   TEST_FILE = "#{TERRAFORM_DIR}/#{TEST_REPO_NAME}.tf"
-  TEST_TEAM = "someteam"
   TEST_USER = "someuser"
   TEST_USER_1 = "someuser1"
   TEST_USER_2 = "someuser2"
   TEST_USER_3 = "someuser3"
-  TEST_USER_6 = "someuser6"
+  TEST_USER_4 = "someuser4"
   TEST_REPO_NAME1 = "test-repo1"
   TEST_REPO_NAME2 = "test-repo2"
   TEST_REPO_NAME3 = "test-repo3"
@@ -52,7 +51,6 @@ module TestConstants
   INCORRECT_REVIEW_DATE_FUTURE = (Date.today + 500).strftime(DATE_FORMAT)
   CORRECT_REVIEW_DATE_FUTURE = (Date.today + 366).strftime(DATE_FORMAT)
   CORRECT_PERMISSION = "push"
-  INCORRECT__PERMISSION = "write"
   OPEN = "open"
   CLOSED = "closed"
   CREATED_DATE = "2019-10-01"

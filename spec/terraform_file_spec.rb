@@ -28,7 +28,7 @@ class GithubCollaborators
             review_date = Date.today.strftime(DATE_FORMAT)
             collaborator_data = create_collaborator_data(review_date)
             collaborator_data[:login] = TEST_USER_1
-            collaborator_data[:added_by] = ADDED_BY_EMAIL
+            collaborator_data[:added_by] = TEST_COLLABORATOR_ADDED_BY
             @terraform_file.add_collaborator_from_issue(collaborator_data)
             @review_date = (Date.today).strftime(DATE_FORMAT)
           end
@@ -52,7 +52,7 @@ class GithubCollaborators
           end
 
           it "call get_collaborator_added_by when collaborator exists" do
-            test_equal(@terraform_file.get_collaborator_added_by(TEST_USER_1), ADDED_BY_EMAIL)
+            test_equal(@terraform_file.get_collaborator_added_by(TEST_USER_1), TEST_COLLABORATOR_ADDED_BY)
           end
 
           # TODO check this test

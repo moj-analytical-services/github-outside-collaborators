@@ -114,7 +114,7 @@ module TestHelpers
       email: TEST_COLLABORATOR_EMAIL,
       org: TEST_COLLABORATOR_ORG,
       reason: REASON1,
-      added_by: ADDED_BY_EMAIL,
+      added_by: TEST_COLLABORATOR_ADDED_BY,
       review_after: ""
     }
   end
@@ -140,7 +140,7 @@ module TestHelpers
       email: TEST_COLLABORATOR_EMAIL,
       org: TEST_COLLABORATOR_ORG,
       reason: TEST_COLLABORATOR_REASON,
-      added_by: ADDED_BY_EMAIL,
+      added_by: TEST_COLLABORATOR_ADDED_BY,
       review_after: ""
     }
   end

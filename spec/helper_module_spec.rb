@@ -123,7 +123,7 @@ class GithubCollaborators
         end
 
         it COLLABORATOR_DOESNT_EXIST do
-          test_equal(helper_module.get_name(TEST_USER_6, @collaborators), "")
+          test_equal(helper_module.get_name(TEST_USER_4, @collaborators), "")
         end
       end
 
@@ -133,7 +133,7 @@ class GithubCollaborators
         end
 
         it COLLABORATOR_DOESNT_EXIST do
-          test_equal(helper_module.get_email(TEST_USER_6, @collaborators), "")
+          test_equal(helper_module.get_email(TEST_USER_4, @collaborators), "")
         end
       end
 
@@ -143,7 +143,7 @@ class GithubCollaborators
         end
 
         it COLLABORATOR_DOESNT_EXIST do
-          test_equal(helper_module.get_org(TEST_USER_6, @collaborators), "")
+          test_equal(helper_module.get_org(TEST_USER_4, @collaborators), "")
         end
       end
 
@@ -172,7 +172,7 @@ class GithubCollaborators
         filenames = ["file1", "file2", "file3"]
         branch_name = BRANCH_NAME
         collaborator_name = TEST_USER
-        types = [TYPE_DELETE_EMPTY_FILE, TYPE_EXTEND, TYPE_REMOVE, TYPE_PERMISSION, TYPE_DELETE_ARCHIVE, TYPE_DELETE_FILE, TYPE_ADD_FROM_ISSUE]
+        types = [TYPE_DELETE_EMPTY_FILE, TYPE_EXTEND, TYPE_REMOVE, TYPE_DELETE_ARCHIVE, TYPE_DELETE_FILE, TYPE_ADD_FROM_ISSUE]
 
         it "when branch name valid and unknown type" do
           expect(GithubCollaborators::BranchCreator).to receive(:new).and_return(branch_creator)
