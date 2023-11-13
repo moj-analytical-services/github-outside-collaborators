@@ -4,14 +4,6 @@ class GithubCollaborators
 
   describe TerraformFile do
     context "test TerraformFile" do
-      original_file = File.read("spec/fixtures/test-repo.tf")
-      collaborator1 = GithubCollaborators::FullOrgMember.new(TEST_USER_1)
-      collaborator2 = GithubCollaborators::FullOrgMember.new(TEST_USER_2)
-      collaborator1.add_info_from_file(TEST_COLLABORATOR_EMAIL, TEST_COLLABORATOR_NAME, TEST_COLLABORATOR_ORG)
-      collaborator2.add_info_from_file(TEST_COLLABORATOR_EMAIL, TEST_COLLABORATOR_NAME, TEST_COLLABORATOR_ORG)
-      review_date = (Date.today + 90).strftime(DATE_FORMAT)
-      new_review_date = (Date.today + 180 + 90).strftime(DATE_FORMAT)
-
       context "" do
         before do
           @terraform_file = GithubCollaborators::TerraformFile.new(TEST_REPO_NAME, TERRAFORM_DIR)
@@ -41,13 +33,17 @@ class GithubCollaborators
 
         context "" do
           before do
-            @terraform_file.add_org_member_collaborator(collaborator1, TEST_COLLABORATOR_PERMISSION)
+            terraform_block = create_collaborator_with_login(TEST_USER_1)
+            collaborator = GithubCollaborators::Collaborator.new(terraform_block, "")
+            @terraform_file.add_terraform_file_collaborator_data(collaborator)
+            @review_date = (Date.today + 90).strftime(DATE_FORMAT)
           end
 
           it "call extend_review_date and revert_terraform_blocks" do
+            new_review_date = (Date.today + 180 + 90).strftime(DATE_FORMAT)
             terraform_blocks = @terraform_file.get_terraform_blocks
             terraform_blocks.each do |terraform_block|
-              test_equal(terraform_block.review_after, review_date)
+              test_equal(terraform_block.review_after, @review_date)
             end
             @terraform_file.extend_review_date(TEST_USER_1)
             terraform_blocks = @terraform_file.get_terraform_blocks
@@ -57,7 +53,7 @@ class GithubCollaborators
             @terraform_file.revert_terraform_blocks
             terraform_blocks = @terraform_file.get_terraform_blocks
             terraform_blocks.each do |terraform_block|
-              test_equal(terraform_block.review_after, review_date)
+              test_equal(terraform_block.review_after, @review_date)
             end
           end
 
@@ -106,7 +102,9 @@ class GithubCollaborators
 
           context "" do
             before do
-              @terraform_file.add_org_member_collaborator(collaborator2, TEST_COLLABORATOR_PERMISSION)
+              terraform_block2 = create_collaborator_with_login(TEST_USER_2)
+              @collaborator2 = GithubCollaborators::Collaborator.new(terraform_block2, "")
+              @terraform_file.add_org_member_collaborator(@collaborator2, TEST_COLLABORATOR_PERMISSION)
             end
 
             it "call add_org_member_collaborator" do
@@ -134,15 +132,16 @@ class GithubCollaborators
         end
 
         it "call create_terraform_collaborator_blocks" do
+          original_file = File.read("spec/fixtures/test-repo.tf")
           File.write(TEST_FILE, original_file)
           @terraform_file.create_terraform_collaborator_blocks
-          @collaborators_in_file = []
+          collaborators_in_file = []
           terraform_blocks = @terraform_file.get_terraform_blocks
           terraform_blocks.each do |terraform_block|
-            @collaborators_in_file.push(terraform_block.username)
+            collaborators_in_file.push(terraform_block.username)
           end
           expected_collaborators = [TEST_USER_1, TEST_USER_2]
-          test_equal(@collaborators_in_file, expected_collaborators)
+          test_equal(collaborators_in_file, expected_collaborators)
           File.delete(TEST_FILE)
         end
       end
@@ -167,8 +166,8 @@ class GithubCollaborators
                 name         = "some user"
                 email        = "someuser@some-email.com"
                 org          = "some org"
-                reason       = "Full Org member / collaborator missing from Terraform file"
-                added_by     = "opseng-bot@digital.justice.gov.uk"
+                reason       = "some reason"
+                added_by     = "someemail@digital.justice.gov.uk"
                 review_after = "<%= review_date %>"
               },
             ]

@@ -39,7 +39,7 @@ class GithubCollaborators
         @collaborator1 = GithubCollaborators::Collaborator.new(terraform_block, REPOSITORY_NAME)
         @collaborator1.check_for_issues
 
-        terraform_block = create_collaborator_with_login(TEST_USER_2)
+        terraform_block = create_terraform_block_review_date_yesterday(TEST_USER_2)
         @collaborator2 = GithubCollaborators::Collaborator.new(terraform_block, REPOSITORY_NAME)
       end
 

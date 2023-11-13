@@ -46,9 +46,6 @@ module Constants
   TYPE_PERMISSION = "permission"
 
   # Pull request type
-  TYPE_ADD = "add"
-
-  # Pull request type
   TYPE_ADD_FROM_ISSUE = "add_from_issue"
 
   # Pull request type

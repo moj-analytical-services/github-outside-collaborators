@@ -7,7 +7,7 @@ class GithubCollaborators
     context "test SlackNotifier" do
       before do
         @terraform_block = create_terraform_block_review_date_today
-        @test_object = GithubCollaborators::FullOrgMemberExpired.new
+        @test_object = GithubCollaborators::Expired.new
         @collaborators = []
       end
 

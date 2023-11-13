@@ -67,20 +67,6 @@ class GithubCollaborators
         test_equal(@terraform_block.review_after, "")
       end
 
-      it "call add_org_member_collaborator_data" do
-        collaborator = GithubCollaborators::FullOrgMember.new(TEST_COLLABORATOR_LOGIN)
-        collaborator.add_info_from_file(TEST_COLLABORATOR_EMAIL, TEST_COLLABORATOR_NAME, TEST_COLLABORATOR_ORG)
-        @terraform_block.add_org_member_collaborator_data(collaborator, TEST_COLLABORATOR_PERMISSION)
-        test_equal(@terraform_block.username, TEST_COLLABORATOR_LOGIN)
-        test_equal(@terraform_block.permission, TEST_COLLABORATOR_PERMISSION)
-        test_equal(@terraform_block.name, TEST_COLLABORATOR_NAME)
-        test_equal(@terraform_block.email, TEST_COLLABORATOR_EMAIL)
-        test_equal(@terraform_block.org, TEST_COLLABORATOR_ORG)
-        test_equal(@terraform_block.reason, REASON1)
-        test_equal(@terraform_block.added_by, ADDED_BY_EMAIL)
-        test_equal(@terraform_block.review_after, @review_date)
-      end
-
       it "call add_missing_collaborator_data" do
         @terraform_block.add_missing_collaborator_data(TEST_COLLABORATOR_LOGIN)
         test_equal(@terraform_block.username, TEST_COLLABORATOR_LOGIN)

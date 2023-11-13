@@ -519,25 +519,6 @@ class GithubCollaborators
       end
     end
 
-    # Call the functions to change the repository access permission for a specific
-    # collaborator a within a TerraformFile object, then write that Terraform
-    # file in the Terraform folder and revert the TerraformFile object
-    # back to its original state.
-    #
-    # @param repository_name [String] the name of the repository to modify
-    # @param collaborator_name [String] the collaborator login name
-    # @param repository_permission [String] the repository access permission
-    def change_collaborator_permission_in_file(repository_name, collaborator_name, repository_permission)
-      logger.debug "change_collaborator_permission_in_file"
-      @terraform_files.each do |terraform_file|
-        if terraform_file.filename.downcase == tf_safe(repository_name.downcase)
-          terraform_file.change_collaborator_permission(collaborator_name.downcase, repository_permission)
-          terraform_file.write_to_file
-          terraform_file.revert_terraform_blocks
-        end
-      end
-    end
-
     # Find which Terraform files have zero TerraformBlock objects
     #
     # @return [Array<String>] the name of the empty Terraform files
@@ -574,25 +555,6 @@ class GithubCollaborators
       @terraform_files.each do |terraform_file|
         if terraform_file.filename.downcase == tf_safe(repository_name.downcase)
           return true
-        end
-      end
-      false
-    end
-
-    # Check if a collaborator in a Terraform file was added by this code
-    #
-    # @param repository_name [String] the name of the repository
-    # @param collaborator_name [String] the name of the collaborator
-    # @return [Bool] true if collaborator was added by this code
-    def did_automation_add_collaborator_to_file(repository_name, collaborator_name)
-      logger.debug "did_automation_add_collaborator_to_file"
-      @terraform_files.each do |terraform_file|
-        if terraform_file.filename.downcase == tf_safe(repository_name.downcase)
-          reason = terraform_file.get_collaborator_reason(collaborator_name.downcase)
-          added_by = terraform_file.get_collaborator_added_by(collaborator_name.downcase)
-          if reason == REASON1 && added_by == ADDED_BY_EMAIL
-            return true
-          end
         end
       end
       false
