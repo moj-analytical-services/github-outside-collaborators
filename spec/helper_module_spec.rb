@@ -117,16 +117,6 @@ class GithubCollaborators
         end
       end
 
-      context "call does_collaborator_already_exist" do
-        it COLLABORATOR_EXISTS do
-          test_equal(helper_module.does_collaborator_already_exist(TEST_USER_1, @collaborators), true)
-        end
-
-        it COLLABORATOR_DOESNT_EXIST do
-          test_equal(helper_module.does_collaborator_already_exist(TEST_USER_6, @collaborators), false)
-        end
-      end
-
       context "call get_name" do
         it COLLABORATOR_EXISTS do
           test_equal(helper_module.get_name(TEST_USER_1, @collaborators), TEST_COLLABORATOR_NAME)

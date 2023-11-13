@@ -17,7 +17,6 @@ class GithubCollaborators
         allow_any_instance_of(HelperModule).to receive(:get_everyone_team_repositories).and_return([])
         organization = GithubCollaborators::Organization.new
         test_equal(organization.repositories.length, 2)
-        test_equal(organization.full_org_members.length, 0)
         test_equal(organization.archived_repositories.length, 2)
         test_equal(organization.archived_repositories, [TEST_REPO_NAME1, TEST_REPO_NAME2])
       end

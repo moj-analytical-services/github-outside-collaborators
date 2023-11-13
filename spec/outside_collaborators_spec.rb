@@ -39,7 +39,7 @@ class GithubCollaborators
         @collaborator1 = GithubCollaborators::Collaborator.new(terraform_block, REPOSITORY_NAME)
         @collaborator1.check_for_issues
 
-        terraform_block = create_terraform_block_review_date_yesterday(TEST_USER_2)
+        terraform_block = create_terraform_block_review_date_yesterday
         @collaborator2 = GithubCollaborators::Collaborator.new(terraform_block, REPOSITORY_NAME)
       end
 
@@ -90,14 +90,12 @@ class GithubCollaborators
         it "call has_review_date_expired" do
           expect(@outside_collaborators).to receive(:find_collaborators_who_have_expired).with([@collaborator1]).and_return([@collaborator1])
           expect(@outside_collaborators).to receive(:remove_expired_collaborators).with([@collaborator1])
-          expect(@outside_collaborators).to receive(:remove_expired_full_org_members).with([@collaborator1])
           @outside_collaborators.has_review_date_expired([@collaborator1])
         end
 
         it "call is_review_date_within_a_week" do
           expect(@outside_collaborators).to receive(:find_collaborators_who_expire_soon).with([@collaborator1]).and_return([@collaborator1])
           expect(@outside_collaborators).to receive(:extend_collaborators_review_date).with([@collaborator1])
-          expect(@outside_collaborators).to receive(:extend_full_org_member_review_date).with([@collaborator1])
           @outside_collaborators.is_review_date_within_a_week([@collaborator1])
         end
 
