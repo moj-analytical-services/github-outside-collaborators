@@ -52,13 +52,7 @@ module Constants
   COLLABORATOR_EXPIRES_SOON = "Collaborator review date expires soon for user"
 
   # Github issue title
-  COLLABORATOR_EXPIRY_UPCOMING = "Review after date expiry is upcoming for user"
-
-  # Github issue title
   DEFINE_COLLABORATOR_IN_CODE = "Please define outside collaborators in code"
-
-  # Github issue title
-  USE_TEAM_ACCESS = "User access removed, access is now via a team"
 
   # App internal issue
   REVIEW_DATE_WITHIN_MONTH = "Review after date is within a month"

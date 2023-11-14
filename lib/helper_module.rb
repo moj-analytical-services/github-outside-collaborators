@@ -90,9 +90,7 @@ module HelperModule
       # Check for the issues created by this application and that the issue is open
       if (
         issue[:title].include?(COLLABORATOR_EXPIRES_SOON) ||
-        issue[:title].include?(COLLABORATOR_EXPIRY_UPCOMING) ||
-        issue[:title].include?(DEFINE_COLLABORATOR_IN_CODE) ||
-        issue[:title].include?(USE_TEAM_ACCESS)
+        issue[:title].include?(DEFINE_COLLABORATOR_IN_CODE)
       ) && issue[:state] == "open"
         # Get issue created date and add 45 day grace period
         created_date = Date.parse(issue[:created_at])
@@ -255,35 +253,6 @@ module HelperModule
     end
 
     found_issues
-  end
-
-  # Create a GraphQL query that returns the Organization member login names
-  #
-  # @param end_cursor [String] id of next page in search results
-  # @return [String] the GraphQL query
-  def organisation_members_query(end_cursor)
-    module_logger.debug "organisation_members_query"
-    after = end_cursor.nil? ? "null" : "\"#{end_cursor}\""
-    %[
-      {
-        organization(login: "#{ORG}") {
-          membersWithRole(
-            first: 100
-            after: #{after}
-          ) {
-            edges {
-              node {
-                login
-              }
-            }
-            pageInfo {
-              hasNextPage
-              endCursor
-            }
-          }
-        }
-      }
-    ]
   end
 
   # Query the all_org_members team and return its repositories
