@@ -257,30 +257,6 @@ module HelperModule
     found_issues
   end
 
-  # Get full list of Organization member login names
-  #
-  # @return [Array<String>] the Organization member login names
-  def get_all_organisation_members
-    module_logger.debug "get_all_organisation_members"
-    org_members = []
-    end_cursor = nil
-    graphql = GithubCollaborators::GithubGraphQlClient.new
-    loop do
-      response = graphql.run_query(organisation_members_query(end_cursor))
-      json_data = JSON.parse(response)
-      if !json_data.dig("data", "organization", "membersWithRole", "edges").nil?
-        members = json_data.dig("data", "organization", "membersWithRole", "edges")
-        members.each do |member|
-          login = member.dig("node", "login")
-          org_members.push(login.downcase)
-        end
-      end
-      end_cursor = json_data.dig("data", "organization", "membersWithRole", "pageInfo", "endCursor")
-      break unless json_data.dig("data", "organization", "membersWithRole", "pageInfo", "hasNextPage")
-    end
-    org_members.sort!
-  end
-
   # Create a GraphQL query that returns the Organization member login names
   #
   # @param end_cursor [String] id of next page in search results
