@@ -11,7 +11,6 @@ class GithubCollaborators
       it "initialize object" do
         repo2 = GithubCollaborators::Repository.new(TEST_REPO_NAME2, 5)
         repo3 = GithubCollaborators::Repository.new(TEST_REPO_NAME3, 0)
-        allow_any_instance_of(HelperModule).to receive(:get_all_organisation_members).and_return([])
         allow_any_instance_of(HelperModule).to receive(:get_active_repositories).and_return([repo2, repo3])
         allow_any_instance_of(HelperModule).to receive(:get_archived_repositories).and_return([TEST_REPO_NAME1, TEST_REPO_NAME2])
         allow_any_instance_of(HelperModule).to receive(:get_everyone_team_repositories).and_return([])
@@ -26,7 +25,6 @@ class GithubCollaborators
 
       context "" do
         before do
-          allow_any_instance_of(HelperModule).to receive(:get_all_organisation_members).and_return([])
           allow_any_instance_of(HelperModule).to receive(:get_archived_repositories).and_return([])
           allow_any_instance_of(HelperModule).to receive(:get_everyone_team_repositories).and_return([])
         end
@@ -120,7 +118,6 @@ class GithubCollaborators
 
           context "" do
             before do
-              allow_any_instance_of(HelperModule).to receive(:get_all_organisation_members).and_return([])
               @organization = GithubCollaborators::Organization.new
             end
 
@@ -132,7 +129,6 @@ class GithubCollaborators
       end
 
       it "call get_org_archived_repositories when there are archived_repositories" do
-        allow_any_instance_of(HelperModule).to receive(:get_all_organisation_members).and_return([])
         allow_any_instance_of(HelperModule).to receive(:get_active_repositories).and_return([])
         allow_any_instance_of(HelperModule).to receive(:get_archived_repositories).and_return([TEST_REPO_NAME1, TEST_REPO_NAME2])
         allow_any_instance_of(HelperModule).to receive(:get_everyone_team_repositories).and_return([])
