@@ -23,10 +23,6 @@ class GithubCollaborators
 
       # This is the number of Organization outside collaborators
       @github_collaborators = @outside_collaborators.length
-
-      # This is a list of the everyone team repositories
-      # Array<String>
-      @everyone_team_repositories = get_everyone_team_repositories
     end
 
     # Get the Organization archived repository name

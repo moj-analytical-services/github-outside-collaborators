@@ -13,7 +13,6 @@ class GithubCollaborators
         repo3 = GithubCollaborators::Repository.new(TEST_REPO_NAME3, 0)
         allow_any_instance_of(HelperModule).to receive(:get_active_repositories).and_return([repo2, repo3])
         allow_any_instance_of(HelperModule).to receive(:get_archived_repositories).and_return([TEST_REPO_NAME1, TEST_REPO_NAME2])
-        allow_any_instance_of(HelperModule).to receive(:get_everyone_team_repositories).and_return([])
         organization = GithubCollaborators::Organization.new
         test_equal(organization.repositories.length, 2)
         test_equal(organization.archived_repositories.length, 2)
@@ -26,7 +25,6 @@ class GithubCollaborators
       context "" do
         before do
           allow_any_instance_of(HelperModule).to receive(:get_archived_repositories).and_return([])
-          allow_any_instance_of(HelperModule).to receive(:get_everyone_team_repositories).and_return([])
         end
 
         context "call get_repository_issues_from_github" do
@@ -103,7 +101,6 @@ class GithubCollaborators
         before do
           allow_any_instance_of(HelperModule).to receive(:get_active_repositories).and_return([])
           allow_any_instance_of(HelperModule).to receive(:get_archived_repositories).and_return([])
-          allow_any_instance_of(HelperModule).to receive(:get_everyone_team_repositories).and_return([])
         end
 
         context "" do
@@ -131,7 +128,6 @@ class GithubCollaborators
       it "call get_org_archived_repositories when there are archived_repositories" do
         allow_any_instance_of(HelperModule).to receive(:get_active_repositories).and_return([])
         allow_any_instance_of(HelperModule).to receive(:get_archived_repositories).and_return([TEST_REPO_NAME1, TEST_REPO_NAME2])
-        allow_any_instance_of(HelperModule).to receive(:get_everyone_team_repositories).and_return([])
         organization = GithubCollaborators::Organization.new
         test_equal(organization.get_org_archived_repositories.length, 2)
       end

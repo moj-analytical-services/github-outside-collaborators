@@ -336,7 +336,6 @@ class GithubCollaborators
           expect(terraform_files).to receive(:get_terraform_files).and_return([])
           allow_any_instance_of(HelperModule).to receive(:get_org_outside_collaborators).and_return([])
           allow_any_instance_of(HelperModule).to receive(:get_archived_repositories).and_return([])
-          allow_any_instance_of(HelperModule).to receive(:get_everyone_team_repositories).and_return([])
           allow_any_instance_of(HelperModule).to receive(:get_active_repositories).and_return([])
           @organization = GithubCollaborators::Organization.new
           @outside_collaborators = GithubCollaborators::OutsideCollaborators.new
@@ -434,7 +433,6 @@ class GithubCollaborators
         before do
           allow_any_instance_of(HelperModule).to receive(:get_org_outside_collaborators).and_return([])
           allow_any_instance_of(HelperModule).to receive(:get_archived_repositories).and_return([])
-          allow_any_instance_of(HelperModule).to receive(:get_everyone_team_repositories).and_return([])
         end
 
         context "call deleted_repository_check" do
@@ -531,7 +529,6 @@ class GithubCollaborators
         allow_any_instance_of(HelperModule).to receive(:get_org_outside_collaborators).and_return([])
         allow_any_instance_of(HelperModule).to receive(:get_archived_repositories).and_return([])
         allow_any_instance_of(HelperModule).to receive(:get_active_repositories).and_return([repo1, repo2])
-        allow_any_instance_of(HelperModule).to receive(:get_everyone_team_repositories).and_return([])
         organization = GithubCollaborators::Organization.new
 
         file = create_terraform_file

@@ -255,26 +255,6 @@ module HelperModule
     found_issues
   end
 
-  # Query the all_org_members team and return its repositories
-  #
-  # @return [Array<String>] list of the repository names
-  def get_everyone_team_repositories
-    module_logger.debug "get_everyone_team_repositories"
-
-    team_repositories = []
-
-    [1, 2, 3].each do |page_number|
-      url = "#{GH_ORG_API_URL}/teams/everyone/repos?per_page=100&page=#{page_number}"
-
-      json = GithubCollaborators::HttpClient.new.fetch_json(url)
-      JSON.parse(json)
-        .find_all { |repository| repository["name"].downcase }
-        .map { |repository| team_repositories.push(repository["name"].downcase) }
-    end
-
-    team_repositories
-  end
-
   # Return the name of a specific collaborator from a list of collaborator objects
   #
   # @param login [String] login name of the collaborator to find
