@@ -86,16 +86,6 @@ class GithubCollaborators
               terraform_blocks = @terraform_file.get_terraform_blocks
               test_equal(terraform_blocks.length, 1)
             end
-
-            # TODO check this test
-            # it "call remove_collaborator and restore_terraform_blocks" do
-            #   terraform_blocks = @terraform_file.get_terraform_blocks
-            #   test_equal(terraform_blocks.length, 2)
-            #   @terraform_file.remove_collaborator(TEST_USER_1)
-            #   @terraform_file.restore_terraform_blocks
-            #   terraform_blocks = @terraform_file.get_terraform_blocks
-            #   test_equal(terraform_blocks.length, 1)
-            # end
           end
         end
 
