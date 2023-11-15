@@ -25,12 +25,11 @@ class GithubCollaborators
 
         context "" do
           before do
-            review_date = Date.today.strftime(DATE_FORMAT)
-            collaborator_data = create_collaborator_data(review_date)
+            @review_date = Date.today.strftime(DATE_FORMAT)
+            collaborator_data = create_collaborator_data(@review_date)
             collaborator_data[:login] = TEST_USER_1
             collaborator_data[:added_by] = TEST_COLLABORATOR_ADDED_BY
             @terraform_file.add_collaborator_from_issue(collaborator_data)
-            @review_date = (Date.today).strftime(DATE_FORMAT)
           end
 
           it "call extend_review_date and revert_terraform_blocks" do
@@ -55,21 +54,22 @@ class GithubCollaborators
             test_equal(@terraform_file.get_collaborator_added_by(TEST_USER_1), TEST_COLLABORATOR_ADDED_BY)
           end
 
-          # TODO check this test
-          # it "call restore_terraform_blocks" do
-          #   terraform_blocks = @terraform_file.get_terraform_blocks
-          #   test_equal(terraform_blocks.length, 1)
-          #   @terraform_file.restore_terraform_blocks
-          #   terraform_blocks = @terraform_file.get_terraform_blocks
-          #   test_equal(terraform_blocks.length, 0)
-          # end
+          it "call restore_terraform_blocks" do
+            terraform_blocks_original = @terraform_file.get_terraform_blocks
+            test_equal(terraform_blocks_original.length, 1)
+            name = terraform_blocks_original[0].username
+            @terraform_file.remove_collaborator(name)
+            removed_terraform_blocks = @terraform_file.restore_terraform_blocks
+            test_equal(removed_terraform_blocks.length, 0)
+            terraform_blocks_restored = @terraform_file.get_terraform_blocks
+            test_equal(terraform_blocks_original, terraform_blocks_restored)
+          end
 
-          # TODO check this test
-          # it "call write_to_file" do
-          #   expected_output = create_test_file_template
-          #   expect(File).to receive(:write).with("#{TERRAFORM_DIR}/test-repo.tf", expected_output)
-          #   @terraform_file.write_to_file
-          # end
+          it "call write_to_file" do
+            expected_output = create_test_file_template
+            expect(File).to receive(:write).with("#{TERRAFORM_DIR}/test-repo.tf", expected_output)
+            @terraform_file.write_to_file
+          end
 
           context "" do
             before do
@@ -122,7 +122,7 @@ class GithubCollaborators
       end
 
       def create_test_file_template
-        review_date = (Date.today + 90).strftime(DATE_FORMAT)
+        review_date = (Date.today).strftime(DATE_FORMAT)
         template = <<~EOF
           module "test-repo" {
             source     = "./modules/repository-collaborators"
@@ -135,7 +135,7 @@ class GithubCollaborators
                 email        = "someuser@some-email.com"
                 org          = "some org"
                 reason       = "some reason"
-                added_by     = "someemail@digital.justice.gov.uk"
+                added_by     = "other user"
                 review_after = "<%= review_date %>"
               },
             ]

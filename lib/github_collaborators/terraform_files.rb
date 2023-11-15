@@ -98,10 +98,10 @@ class GithubCollaborators
       @terraform_modified_blocks = []
 
       # A temporary list of the TerraformBlock objects
-      # that have been added or removed by the App, these
-      # objects need to removed or added back in after the
+      # that have been removed by the App, these
+      # objects need to be added back in after the
       # App has finished modifying the Terraform file object
-      @add_removed_terraform_blocks = []
+      @removed_terraform_blocks = []
 
       # The contents of the Terraform file stored as an array
       @terraform_file_data = []
@@ -163,23 +163,22 @@ class GithubCollaborators
       @terraform_blocks.delete_if do |terraform_block|
         if terraform_block.username.downcase == collaborator_name.downcase
           index = @terraform_blocks.index(terraform_block)
-          @add_removed_terraform_blocks.push({added: false, removed: true, block: terraform_block.clone, index: index})
+          @removed_terraform_blocks.push({removed: true, block: terraform_block.clone, index: index})
           true
         end
       end
     end
 
     # Restore TerraformBlock objects within the Terraform file
-    # back to their original state. Either remove added objects
-    # or add object back to the Terraform file object
+    # back to their original state
     def restore_terraform_blocks
       logger.debug "restore_terraform_blocks"
-      @add_removed_terraform_blocks.each do |original_block|
+      @removed_terraform_blocks.each do |original_block|
         if original_block[:removed]
           @terraform_blocks.insert(original_block[:index], original_block[:block])
         end
       end
-      @add_removed_terraform_blocks.clear
+      @removed_terraform_blocks.clear
     end
 
     # Write the TerraformBlock objects to a Terraform file
