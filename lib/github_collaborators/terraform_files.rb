@@ -128,7 +128,6 @@ class GithubCollaborators
       @terraform_modified_blocks.clear
     end
 
-
     # Add a collaborator from an GitHub issue to a
     # TerraformBlock. This is called outside of the
     # App, called by a script in the bin folder.

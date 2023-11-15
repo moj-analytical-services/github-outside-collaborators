@@ -104,7 +104,7 @@ class GithubCollaborators
         end
 
         context "" do
-          before do 
+          before do
             terraform_block = create_collaborator_with_login(TEST_USER_1)
             @collaborator1 = GithubCollaborators::Collaborator.new(terraform_block, TEST_REPO_NAME)
             terraform_block = create_collaborator_with_login(TEST_USER_2)

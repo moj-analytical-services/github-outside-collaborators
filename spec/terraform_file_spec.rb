@@ -112,7 +112,7 @@ class GithubCollaborators
       end
 
       def create_test_file_template
-        review_date = (Date.today).strftime(DATE_FORMAT)
+        review_date = Date.today.strftime(DATE_FORMAT)
         template = <<~EOF
           module "test-repo" {
             source     = "./modules/repository-collaborators"

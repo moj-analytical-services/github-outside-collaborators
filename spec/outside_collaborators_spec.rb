@@ -22,7 +22,7 @@ class GithubCollaborators
         allow_any_instance_of(HelperModule).to receive(:get_pull_requests).and_return([])
         expect(GithubCollaborators::TerraformFiles).to receive(:new).and_return(terraform_files).at_least(1).times
         expect(GithubCollaborators::Organization).to receive(:new).and_return(organization).at_least(1).times
-    
+
         terraform_block = create_terraform_block_review_date_yesterday
         @expired_collaborator = GithubCollaborators::Collaborator.new(terraform_block, REPOSITORY_NAME)
         @expired_collaborator.check_for_issues

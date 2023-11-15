@@ -6,7 +6,7 @@ class GithubCollaborators
     context "test TerraformBlock" do
       before do
         @terraform_block = GithubCollaborators::TerraformBlock.new
-        @review_date = (Date.today).strftime(DATE_FORMAT)
+        @review_date = Date.today.strftime(DATE_FORMAT)
       end
 
       def check_terraform_block_empty(terraform_block)
