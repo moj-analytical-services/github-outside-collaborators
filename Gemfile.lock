@@ -38,7 +38,7 @@ GEM
     llhttp-ffi (0.4.0)
       ffi-compiler (~> 1.0)
       rake (~> 13.0)
-    notifications-ruby-client (5.4.0)
+    notifications-ruby-client (6.0.0)
       jwt (>= 1.5, < 3)
     public_suffix (5.0.3)
     rake (13.0.6)
@@ -87,7 +87,7 @@ DEPENDENCIES
   git
   http
   json
-  notifications-ruby-client (~> 5.4)
+  notifications-ruby-client (~> 6.0)
   rspec
   simplecov
   uuidtools
