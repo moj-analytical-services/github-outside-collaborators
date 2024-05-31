@@ -10,7 +10,7 @@ module "airflow-legislation-documentstore" {
       org          = "Cabinet Office/No 10"
       reason       = "Collaboration with no10 on a x-govt project relating to legislation."
       added_by     = "sam.pepper@digital.justice.gov.uk"
-      review_after = "2024-08-01"
+      review_after = "2025-05-29"
     },
   ]
 }
