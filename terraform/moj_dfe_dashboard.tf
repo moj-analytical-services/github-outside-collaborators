@@ -1,6 +1,6 @@
-module "dfe_moj_dashboard" {
+module "moj_dfe_dashboard" {
   source     = "./modules/repository-collaborators"
-  repository = "dfe_moj_dashboard"
+  repository = "moj_dfe_dashboard"
   collaborators = [
     {
       github_user  = "JennyMcNally"
